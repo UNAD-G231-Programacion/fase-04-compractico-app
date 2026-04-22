@@ -1,10 +1,10 @@
-# 🤝 Guía de Colaboración — Flujo de Trabajo con Git y GitHub
+#  Guía de Colaboración — Flujo de Trabajo con Git y GitHub
 
 > **Regla principal:** Nadie trabaja directamente sobre `main`. Cada integrante del equipo debe crear y trabajar en su propia rama.
 
 ---
 
-## 📋 Requisitos previos
+## Requisitos previos
 
 - Tener **Git** instalado en tu equipo
 - Tener una cuenta en **GitHub**
@@ -12,7 +12,7 @@
 
 ---
 
-## 🚀 Paso 1 — Clonar el repositorio
+## Paso 1 — Clonar el repositorio
 
 Copia el enlace del repositorio desde GitHub y ejecuta en tu terminal:
 
@@ -26,11 +26,11 @@ Luego entra a la carpeta del proyecto:
 cd nombre-del-repositorio
 ```
 
-> ⚠️ **Importante:** Al clonar un repositorio, Git ya está inicializado automáticamente. **No ejecutes** `git init`, ya que podría causar conflictos.
+> **Importante:** Al clonar un repositorio, Git ya está inicializado automáticamente. **No ejecutes** `git init`, ya que podría causar conflictos.
 
 ---
 
-## 🌿 Paso 2 — Crear tu rama de trabajo
+## Paso 2 — Crear tu rama de trabajo
 
 Antes de crear tu rama, asegúrate de estar en `main` y tener la versión más reciente:
 
@@ -55,7 +55,7 @@ git checkout -b feature-juan-perez
 
 ---
 
-## 💻 Paso 3 — Trabajar en tu rama
+## Paso 3 — Trabajar en tu rama
 
 A partir de este momento, todos tus cambios deben realizarse estando en **tu rama**. Puedes verificar en qué rama estás con:
 
@@ -67,7 +67,7 @@ La rama activa aparecerá marcada con un asterisco `*`.
 
 ---
 
-## 💾 Paso 4 — Guardar cambios (commits)
+## Paso 4 — Guardar cambios (commits)
 
 Cada vez que avances en tu trabajo, guarda los cambios con los siguientes comandos:
 
@@ -90,13 +90,13 @@ git add nombre-del-archivo.ext
 git commit -m "Descripción breve de lo que hiciste"
 ```
 
-> ✅ **Buenas prácticas para el mensaje del commit:**
+> **Buenas prácticas para el mensaje del commit:**
 > - Sé claro y específico: `"Agrega formulario de registro de usuario"`
 > - Evita mensajes vagos como: `"cambios"` o `"actualización"`
 
 ---
 
-## ☁️ Paso 5 — Subir tu rama a GitHub
+## Paso 5 — Subir tu rama a GitHub
 
 La primera vez que subas tu rama, usa:
 
@@ -112,7 +112,7 @@ git push
 
 ---
 
-## 🔁 Paso 6 — Mantener tu rama actualizada
+## Paso 6 — Mantener tu rama actualizada
 
 Si otros compañeros han hecho cambios en `main`, es importante que actualices tu rama para evitar conflictos:
 
@@ -125,7 +125,7 @@ git merge main
 
 ---
 
-## 📬 Paso 7 — Crear un Pull Request (PR) hacia main
+## Paso 7 — Crear un Pull Request (PR) hacia main
 
 Cuando hayas terminado tu trabajo y quieras integrarlo al proyecto:
 
@@ -135,11 +135,11 @@ Cuando hayas terminado tu trabajo y quieras integrarlo al proyecto:
 4. Agrega un **título claro** y una **descripción** de los cambios realizados
 5. Haz clic en **"Create pull request"**
 
-> 🔒 Un compañero o el responsable del proyecto revisará los cambios antes de aprobarlos y hacer el merge hacia `main`.
+> Un compañero o el responsable del proyecto revisará los cambios antes de aprobarlos y hacer el merge hacia `main`.
 
 ---
 
-## 🗺️ Resumen del flujo
+## Resumen del flujo
 
 ```
 Clonar repo → Crear rama feature-tu-nombre → Trabajar y hacer commits
@@ -148,7 +148,7 @@ Clonar repo → Crear rama feature-tu-nombre → Trabajar y hacer commits
 
 ---
 
-## ❓ Comandos de referencia rápida
+## Comandos de referencia rápida
 
 | Acción | Comando |
 |---|---|

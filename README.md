@@ -19,6 +19,7 @@ La carpeta `app/` contiene todos los archivos del desarrollo de la aplicación.
 - Sebastián Victoria González
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 ## Enlace tabla de seguimiento:
 
 Tabla donde se registran los avances de cada integrante:
@@ -29,3 +30,12 @@ Tabla donde se registran los avances de cada integrante:
 =======
 *Proyecto colaborativo — Programación 213023*
 >>>>>>> fa7cae3 (Actualizacion: Se actualizo la informacion del repostorio.)
+=======
+## Enlace tabla de seguimiento:
+
+Tabla donde se registran los avances de cada integrante.
+
+[Google Drive - Tabla de Seguimiento](https://docs.google.com/spreadsheets/d/1bl06h4cMTIm26Lsd81yOmTBk-kr6u5q-pst-R238E7k/edit?usp=sharing "Ir a la tabla de seguimiento")
+
+*Proyecto colaborativo — Programación 213023*
+>>>>>>> 466c002 (Actualizacion: Se actualizaron los archivos de informacion del proyecto.)
