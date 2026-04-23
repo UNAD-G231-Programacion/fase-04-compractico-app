@@ -42,13 +42,13 @@ git pull origin main
 Ahora crea tu rama personal con el siguiente formato:
 
 ```
-feature-nombre-del-estudiante
+feat-nombre-del-estudiante
 ```
 
 **Ejemplo:**
 
 ```bash
-git checkout -b feature-juan-perez
+git checkout -b feat-juan-perez
 ```
 
 > Este comando crea la rama **y** te mueve a ella automáticamente.
@@ -101,7 +101,7 @@ git commit -m "Descripción breve de lo que hiciste"
 La primera vez que subas tu rama, usa:
 
 ```bash
-git push -u origin feature-nombre-del-estudiante
+git push -u origin feat-nombre-del-estudiante
 ```
 
 > El flag `-u` vincula tu rama local con la remota. A partir de ahí, cada vez que quieras subir nuevos commits, simplemente ejecuta:
@@ -119,7 +119,7 @@ Si otros compañeros han hecho cambios en `main`, es importante que actualices t
 ```bash
 git checkout main
 git pull origin main
-git checkout feature-nombre-del-estudiante
+git checkout feat-nombre-del-estudiante
 git merge main
 ```
 
@@ -142,7 +142,7 @@ Cuando hayas terminado tu trabajo y quieras integrarlo al proyecto:
 ## Resumen del flujo
 
 ```
-Clonar repo → Crear rama feature-tu-nombre → Trabajar y hacer commits
+Clonar repo → Crear rama feat-tu-nombre → Trabajar y hacer commits
      → git push → Crear Pull Request → Revisión → Merge a main
 ```
 
