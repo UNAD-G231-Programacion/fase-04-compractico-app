@@ -20,8 +20,8 @@ La carpeta `app/` contiene todos los archivos del desarrollo de la aplicación.
 
 ## Enlace tabla de seguimiento:
 
-Tabla donde se registran los avances de cada integrante.
+Tabla donde se registran los avances de cada integrante:
 
-[Google Drive - Tabla de Seguimiento](https://docs.google.com/spreadsheets/d/1bl06h4cMTIm26Lsd81yOmTBk-kr6u5q-pst-R238E7k/edit?usp=sharing "Ir a la tabla de seguimiento")
+📍 [Google Drive - Tabla de Seguimiento](https://docs.google.com/spreadsheets/d/1bl06h4cMTIm26Lsd81yOmTBk-kr6u5q-pst-R238E7k/edit?usp=sharing "Ir a la tabla de seguimiento")
 
 *Proyecto colaborativo — Programación 213023*
