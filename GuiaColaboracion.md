@@ -14,6 +14,8 @@
 
 ## Paso 1 — Clonar el repositorio
 
+> Recomendable hacerlo desde Git Bash, La terminal que viene instalada con Git.
+
 Copia el enlace del repositorio desde GitHub y ejecuta en tu terminal:
 
 ```bash
