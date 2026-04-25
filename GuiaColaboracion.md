@@ -42,13 +42,14 @@ git pull origin main
 Ahora crea tu rama personal con el siguiente formato:
 
 ```
-feat-nombre-del-estudiante
+nombre-del-estudiante
+# Ejemplo: juan-perez
 ```
 
 **Ejemplo:**
 
 ```bash
-git checkout -b feat-juan-perez
+git checkout -b juan-perez
 ```
 
 > Este comando crea la rama **y** te mueve a ella automáticamente.
@@ -82,7 +83,7 @@ git status
 git add .
 
 # O agregar un archivo específico
-git add nombre-del-archivo.ext
+git add nombre-del-archivo
 ```
 
 **3. Crear el commit con un mensaje descriptivo:**
@@ -91,8 +92,8 @@ git commit -m "Descripción breve de lo que hiciste"
 ```
 
 > **Buenas prácticas para el mensaje del commit:**
-> - Sé claro y específico: `"Agrega formulario de registro de usuario"`
-> - Evita mensajes vagos como: `"cambios"` o `"actualización"`
+> - Sé claro y específico: `"Se agrego formulario de registro de usuario"`
+> - Evita mensajes cortos como: `"cambios"` o `"actualización"`
 
 ---
 
@@ -101,7 +102,7 @@ git commit -m "Descripción breve de lo que hiciste"
 La primera vez que subas tu rama, usa:
 
 ```bash
-git push -u origin feat-nombre-del-estudiante
+git push -u origin nombre-del-estudiante
 ```
 
 > El flag `-u` vincula tu rama local con la remota. A partir de ahí, cada vez que quieras subir nuevos commits, simplemente ejecuta:
@@ -114,14 +115,15 @@ git push
 
 ## Paso 6 — Mantener tu rama actualizada
 
-Si otros compañeros han hecho cambios en `main`, es importante que actualices tu rama para evitar conflictos:
+Si el lider ha hecho cambios en `main` (no se trabaja en main), es importante que actualices tu rama para evitar conflictos:
 
 ```bash
 git checkout main
 git pull origin main
-git checkout feat-nombre-del-estudiante
+git checkout nombre-del-estudiante
 git merge main
 ```
+> Nadie aparte del lider debe hacer cambios en la rama `main`, ni trabajar sobre ella. Esta se utilizara al final para reunir todo el trabajo colaborativo.
 
 ---
 
@@ -139,15 +141,6 @@ Cuando hayas terminado tu trabajo y quieras integrarlo al proyecto:
 
 ---
 
-## Resumen del flujo
-
-```
-Clonar repo → Crear rama feat-tu-nombre → Trabajar y hacer commits
-     → git push → Crear Pull Request → Revisión → Merge a main
-```
-
----
-
 ## Comandos de referencia rápida
 
 | Acción | Comando |
@@ -155,6 +148,9 @@ Clonar repo → Crear rama feat-tu-nombre → Trabajar y hacer commits
 | Ver ramas existentes | `git branch` |
 | Cambiar de rama | `git checkout nombre-rama` |
 | Ver estado de archivos | `git status` |
+| Preparar un archivo para hacer commit | Agregar todo: `git add .` Agregar algun archivo especifico: `git add nombre-del-archivo` |
+| Hacer un commit | `git commit -m tu-mensaje-aqui` |
+| Subir commit al repositorio | Si es una rama nueva: `git push -u origin nombre-rama`, luego de ahora en adelante `git push` desde la rama.|
 | Ver historial de commits | `git log --oneline` |
 | Traer cambios de GitHub | `git pull origin main` |
 
