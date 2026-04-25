@@ -17,7 +17,7 @@
 Copia el enlace del repositorio desde GitHub y ejecuta en tu terminal:
 
 ```bash
-git clone https://github.com/usuario/nombre-del-repositorio.git
+git clone https://github.com/UNAD-G231-Programacion/fase-04-compractico-app.git
 ```
 
 Luego entra a la carpeta del proyecto:
