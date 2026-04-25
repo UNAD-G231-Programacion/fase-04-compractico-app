@@ -1,5 +1,7 @@
 # Sistema Integral de Gestión de Clientes, Servicios y Reservas
 
+> Este es un archivo `README`, en español: 'LEEME'. Son archivos creados con el objetivo de informar o dar indicaciones, asi mismo los archivos `.md`. Se recomienda no borrar o modificar estos archivos.
+
 **Curso:** Programación | **Código:** 213023 | **Grupo:** 231
 
 **Tutor:** Juan Pablo Arango Cardona
