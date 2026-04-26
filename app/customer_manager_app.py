@@ -8,22 +8,63 @@ import re
 #     def __init__(self, nombre_entidad):
 #         self.nombre_entidad = nombre_entidad
 
-servicios_db = {}
+# BASES DE DATOS
+SERVICIOS = {}
+CLIENTES = {}
+RESERVAS = {}
+
+
+# GENERADOR DE IDS:
+class IDGenerador:
+    """Generador de ID para as distintas entidades."""
+
+    def __init__(self) -> None:
+        pass
+
+    def crear_id(self, letra, base_datos):
+        """Crea un ID"""
+        if isinstance(letra, str):
+            if isinstance(base_datos, dict):
+                letra = letra.upper()
+                num = 100
+
+                while True:
+                    nuevo_id = letra + str(num)
+                    if nuevo_id not in base_datos:
+                        return nuevo_id
+                    num += 1
+
+    def id_servicio(self):
+        """Crea un ID para servicio con el formato 'S###'"""
+        return self.crear_id('S', SERVICIOS)
+
+    def id_cliente(self):
+        """Crea un ID para servicio con el formato 'C###'"""
+        return self.crear_id('C', CLIENTES)
+
+    def id_reserva(self):
+        """Crea un ID para servicio con el formato 'R###'"""
+        return self.crear_id('R', RESERVAS)
+
+
+generador_id = IDGenerador()
 
 
 class Servicio(ABC):
     """Clase abstracta Servicio"""
 
     @abstractmethod
-    def __init__(self, id_servicio, nombre_servicio, costo_servicio):
-        self.__id_servicio = id_servicio
+    def __init__(self, nombre_servicio, costo_servicio):
+        # Generamos un ID nuevo automatico para el servicio creado:
+        self.__id_servicio = generador_id.id_servicio()
+
         self.__nombre_servicio = str(nombre_servicio).strip()
 
         try:
             self.__costo_servicio = float(costo_servicio)
         except Exception as exc:
             raise ValueError(
-                "El argumento Costo debe de ser un numero valido.") from exc
+                "El argumento 'costo_servicio' debe de ser un numero valido.") from exc
 
     # ACCESO PROPIEDAD ID SERVICIO
 
@@ -39,7 +80,7 @@ class Servicio(ABC):
             raise ValueError(
                 f"El ID '{nuevo_valor}' no es valido. (1 Letra, 3 Numeros).")
 
-        if nuevo_valor not in servicios_db:
+        if nuevo_valor not in SERVICIOS:
             # Si el id nuevo no existe en la base de datos de servicios.
             self.__id_servicio = nuevo_valor.upper()
             return
@@ -96,10 +137,8 @@ class Entrada:
         self._entrada_usuario = entrada_usuario
 
     def es_valida(self):
-        """
-        Valida que la cadena no sean solo espacios 
-        o tenga espacios entre caracteres.
-        """
+        """Valida que la cadena no sean solo espacios 
+        o tenga espacios entre caracteres."""
         # No solo espacios/saltos de línea, y sin espacios entre caracteres
         return bool(re.fullmatch(r'\S+', self._entrada_usuario))
 
@@ -115,12 +154,3 @@ class Entrada:
         # reemplaza múltiples espacios en medio por uno solo
         resultado = re.sub(r' {2,}', ' ', resultado)
         return resultado if resultado else None
-
-
-# class ReservaSalas(Servicio):
-#     """
-#     Clase que representa el servicio de reserva de salas.
-#     """
-
-#     def __init__(self, id_servicio, nombre_servicio, costo_servicio):
-#         super().__init__(id_servicio, nombre_servicio, costo_servicio)
