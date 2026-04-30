@@ -50,11 +50,64 @@ class IDGenerador:
 generador_id = IDGenerador()
 
 
+class Entrada:
+    """Clase que recibe entradas para validarlas"""
+
+    def __init__(self, entrada_usuario):
+        self._entrada_usuario = entrada_usuario
+
+    def es_valida(self):
+        """Valida que la cadena no sean solo espacios
+        o tenga espacios entre caracteres."""
+        # No solo espacios/saltos de línea, y sin espacios entre caracteres
+        if not isinstance(self._entrada_usuario, str):
+            return False
+        return bool(re.fullmatch(r'\S+', self._entrada_usuario))
+
+    def es_id_valido(self):
+        """Valida que sea un ID valido (1 Letra, 3 Numeros)"""
+        if not isinstance(self._entrada_usuario, str):
+            return False
+        self._entrada_usuario = self._entrada_usuario.upper()
+        return bool(re.fullmatch(r'[A-Z]\d{3}', self._entrada_usuario))
+
+    def limpiar(self):
+        """Devuelve una cadena sin espacios multiples en medio, al inicio o a final"""
+
+        if isinstance(self._entrada_usuario, str):
+            # Quita espacios al inicio y final
+            resultado = self._entrada_usuario.strip()
+            # reemplaza múltiples espacios en medio por uno solo
+            resultado = re.sub(r' {2,}', ' ', resultado)
+            return resultado if resultado else None
+        return str(self._entrada_usuario)
+
+    def es_porcentaje_valido(self):
+        """Valida que una entrada sea un porcentaje valido y lo convierte a su forma decimal."""
+
+        if isinstance(self._entrada_usuario, (int, float)):
+            return float(self._entrada_usuario) / 100
+
+        if isinstance(self._entrada_usuario, str):
+            entrada = self._entrada_usuario.strip()
+            if entrada.endswith('%'):
+                entrada = entrada[:-1].strip()
+
+            try:
+                valor = float(entrada)
+                return valor / 100
+            except ValueError:
+                return False
+
+        return False
+
+
+# CLASE ABSTRACTA SERVICIO
 class Servicio(ABC):
     """Clase abstracta Servicio"""
 
     @abstractmethod
-    def __init__(self, nombre_servicio, costo_servicio):
+    def __init__(self, nombre_servicio, costo_servicio, valor_iva, valor_desc):
         # Generamos un ID nuevo automatico para el servicio creado:
         self.__id_servicio = generador_id.id_servicio()
 
@@ -65,8 +118,6 @@ class Servicio(ABC):
         except Exception as exc:
             raise ValueError(
                 "El argumento 'costo_servicio' debe de ser un numero valido.") from exc
-
-    # ACCESO PROPIEDAD ID SERVICIO
 
     @property
     def id_servicio(self):
@@ -129,28 +180,31 @@ class Servicio(ABC):
         print(f"- Nombre: {self.nombre_servicio}")
         print(f"- Costo: ${self.costo_servicio}")
 
+    def calcular_costos(self, impuesto=False, descuento=False):
+        """Calcula los costos del servicio"""
+        print("No se ha especificado la operacion para obtener el costo.")
 
-class Entrada:
-    """Clase que recibe entradas para validarlas"""
 
-    def __init__(self, entrada_usuario):
-        self._entrada_usuario = entrada_usuario
+# SERVICIOS
+class ReservaSala(Servicio):
+    """Servicio Reserva de Salas"""
 
-    def es_valida(self):
-        """Valida que la cadena no sean solo espacios 
-        o tenga espacios entre caracteres."""
-        # No solo espacios/saltos de línea, y sin espacios entre caracteres
-        return bool(re.fullmatch(r'\S+', self._entrada_usuario))
+    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Reserva de Sala"):
+        super().__init__(nombre_servicio, costo_servicio,
+                         valor_iva=valor_iva, valor_desc=valor_desc)
 
-    def es_id_valido(self):
-        """Valida que sea un ID valido (1 Letra, 3 Numeros)"""
-        self._entrada_usuario = self._entrada_usuario.upper()
-        return bool(re.fullmatch(r'[A-Z]\d{3}', self._entrada_usuario))
 
-    def limpiar(self):
-        """Devuelve una cadena sin espacios multiples en medio, al inicio o a final"""
-        # Quita espacios al inicio y final
-        resultado = self._entrada_usuario.strip()
-        # reemplaza múltiples espacios en medio por uno solo
-        resultado = re.sub(r' {2,}', ' ', resultado)
-        return resultado if resultado else None
+class AlquilerEquipo(Servicio):
+    """Servicio Alquiler Equipo"""
+
+    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Alquiler de Equipo"):
+        super().__init__(nombre_servicio, costo_servicio,
+                         valor_iva=valor_iva, valor_desc=valor_desc)
+
+
+class AsesoriaEspecializada(Servicio):
+    """Servicio Asesoria Especializada"""
+
+    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Asesoria Especializada"):
+        super().__init__(nombre_servicio, costo_servicio,
+                         valor_iva=valor_iva, valor_desc=valor_desc)
