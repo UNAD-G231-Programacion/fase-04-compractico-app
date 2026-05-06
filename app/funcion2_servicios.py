@@ -41,10 +41,8 @@ admin_servicios = AdminServicios()
 class IDGenerador:
     """Genera identificadores secuenciales para servicios."""
 
-    def __init__(self) -> None:
-        pass
-
-    def crear_id(self, letra, base_datos):
+    @staticmethod
+    def crear_id(letra, base_datos):
         """Genera un ID unico basado en una letra inicial y una base de datos."""
         if isinstance(letra, str) and isinstance(base_datos, dict):
             letra = letra.upper()
@@ -56,13 +54,6 @@ class IDGenerador:
                     # Retorna el primer ID libre en la secuencia.
                     return nuevo_id
                 num += 1
-
-    def id_servicio(self):
-        """Crea un ID para servicio con el formato 'S###'."""
-        return self.crear_id('S', admin_servicios.servicios)
-
-
-generador_id = IDGenerador()
 
 
 class Entrada:
@@ -133,9 +124,8 @@ class Servicio(ABC):
     """Clase abstracta Servicio"""
 
     @abstractmethod
-    def __init__(self, nombre_servicio, costo_servicio, valor_iva, valor_desc):
-        # Generamos un ID nuevo automaticamente para el servicio creado.
-        self.__id_servicio = generador_id.id_servicio()
+    def __init__(self, nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos):
+        self.__id_servicio = IDGenerador.crear_id("S", base_datos)
 
         # Validamos el nombre usando el setter para aplicar limpieza y limite de largo.
         self.nombre_servicio = nombre_servicio
@@ -149,21 +139,6 @@ class Servicio(ABC):
     def id_servicio(self):
         """Accede a la propiedad ID servicio."""
         return self.__id_servicio
-
-    @id_servicio.setter
-    def id_servicio(self, nuevo_valor):
-        nuevo_valor = str(nuevo_valor)
-        if not Entrada(nuevo_valor).es_id_valido():
-            raise ValueError(
-                f"El ID '{nuevo_valor}' no es valido. (1 Letra, 3 Numeros).")
-
-        if nuevo_valor not in admin_servicios.servicios:
-            # Normalizamos el ID en mayusculas antes de guardarlo.
-            self.__id_servicio = nuevo_valor.upper()
-            return
-
-        raise ValueError(
-            f"El ID '{nuevo_valor}' ya se encuentra registrado para un servicio.")
 
     # ACCESO PROPIEDAD NOMBRE SERVICIO
     @property
@@ -217,12 +192,12 @@ class Servicio(ABC):
 
     def mostrar_info(self):
         """Muestra la informacion del servicio."""
-        print("INFORMACION DEL SERVICIO:")
-        print(f"- ID: {self.id_servicio}")
-        print(f"- Nombre: {self.nombre_servicio}")
-        print(f"- Costo: ${self.costo_servicio}")
-        print(f"- Porc. IVA: {self.valor_iva*100}%")
-        print(f"- Porc. Desc: {self.valor_desc*100}%")
+        return f"""INFORMACION DEL SERVICIO:
+- ID: {self.id_servicio}
+- Nombre: {self.nombre_servicio}
+- Costo: ${self.costo_servicio}
+- Porc. IVA: {self.valor_iva*100}%
+- Porc.Desc: {self.valor_desc*100}%"""
 
     def calcular_costos(self):
         """Calcula el costo final aplicando IVA y descuento."""
@@ -242,22 +217,25 @@ class Servicio(ABC):
 class ReservaSala(Servicio):
     """Servicio Reserva de Salas"""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Reserva de Sala"):
-        super().__init__(nombre_servicio, costo_servicio,
-                         valor_iva=valor_iva, valor_desc=valor_desc)
+    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Reserva de Salas"):
+        if base_datos is None:
+            base_datos = admin_servicios.servicios
+        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
 
 
 class AlquilerEquipo(Servicio):
     """Servicio Alquiler Equipo"""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Alquiler de Equipo"):
-        super().__init__(nombre_servicio, costo_servicio,
-                         valor_iva=valor_iva, valor_desc=valor_desc)
+    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Alquiler Equipo"):
+        if base_datos is None:
+            base_datos = admin_servicios.servicios
+        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
 
 
 class AsesoriaEspecializada(Servicio):
     """Servicio Asesoria Especializada"""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, nombre_servicio="Asesoria Especializada"):
-        super().__init__(nombre_servicio, costo_servicio,
-                         valor_iva=valor_iva, valor_desc=valor_desc)
+    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Asesoria Especializada"):
+        if base_datos is None:
+            base_datos = admin_servicios.servicios
+        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
