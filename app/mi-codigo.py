@@ -37,8 +37,8 @@ if __name__ == "__main__":
     mi_calculadora = CalculadoraBasica()
 
     # 2. Definimos un par de números para hacer las pruebas
-    numero_1 = 10
-    numero_2 = 5
+    numero_1 = 20
+    numero_2 = 4
 
     print("--- Iniciando pruebas de CalculadoraBasica ---\n")
 
