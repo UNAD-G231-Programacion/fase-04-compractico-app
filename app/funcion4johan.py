@@ -11,56 +11,61 @@ class EstadoReservaError(ReservaError):
     """Error relacionado con el estado de la reserva"""
     pass
 
-# CLASE RESERVA
+# Clase principal de reservas del sistema 
 
 class Reserva:
 
-    # Estados posibles
+    # Estados posibles de una reserva
     ESTADO_PENDIENTE = "PENDIENTE"
     ESTADO_CONFIRMADA = "CONFIRMADA"
     ESTADO_CANCELADA = "CANCELADA"
 
-    # Lista general de reservas
+    # Lista global de reservas registradas 
     lista_reservas = []
 
     def __init__(self, cliente, servicio, duracion):
         """
         Constructor de la clase Reserva
         """
-
+        #Datos principales de la reserva 
         self.cliente = cliente
         self.servicio = servicio
         self.duracion = duracion
+        #Estado inicial de la reserva
         self.estado = Reserva.ESTADO_PENDIENTE
+        #Fecha de creacion 
         self.fecha = datetime.now()
+
+        #Validacion inicial de datos
 
         self.validar()
 
-    # VALIDACIONES
+    # Validacion de datos de entrada
 
     def validar(self):
         """
         Valida los datos de la reserva
         """
 
-        # Validar cliente
+        # Validar cliente valido
         if self.cliente is None:
             raise ReservaError("Cliente inválido")
 
-        # Validar servicio
+        # Validar servicio valido
         if self.servicio is None:
             raise ReservaError("Servicio inválido")
 
-        # Validar duración
+        # Validar duración numerica
         if not isinstance(self.duracion, (int, float)):
             raise ReservaError("La duración debe ser numérica")
+        
+        #Verifica duracion positiva
 
         if self.duracion <= 0:
             raise ReservaError("La duración debe ser mayor a 0")
         
     # CONFIRMAR RESERVA
     # try / except / else
-
     def confirmar(self):
         """
         Confirma la reserva y calcula el costo
