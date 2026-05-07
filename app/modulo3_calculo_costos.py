@@ -13,6 +13,8 @@ Incluye validaciones y excepción personalizada.
 """
 
 # ---------- EXCEPCIÓN PERSONALIZADA ----------
+
+
 class ErrorCalculo(Exception):
     """Se lanza cuando los datos de entrada para el cálculo son inválidos."""
     pass
@@ -50,7 +52,8 @@ class CalculadoraCostos:
         if costo <= 0:
             raise ErrorCalculo("El costo base debe ser mayor que cero.")
         if not (0 < tasa_impuesto <= 1):
-            raise ErrorCalculo("La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
+            raise ErrorCalculo(
+                "La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
         return round(costo + costo * tasa_impuesto, 2)
 
     @staticmethod
@@ -66,10 +69,12 @@ class CalculadoraCostos:
         if costo <= 0:
             raise ErrorCalculo("El costo base debe ser mayor que cero.")
         if not (0 < tasa_descuento <= 1):
-            raise ErrorCalculo("La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
+            raise ErrorCalculo(
+                "La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
         resultado = costo - costo * tasa_descuento
         if resultado < 0:
-            raise ErrorCalculo("El descuento aplicado supera el costo total, resultado negativo.")
+            raise ErrorCalculo(
+                "El descuento aplicado supera el costo total, resultado negativo.")
         return round(resultado, 2)
 
     @staticmethod
@@ -86,9 +91,11 @@ class CalculadoraCostos:
         if costo <= 0:
             raise ErrorCalculo("El costo base debe ser mayor que cero.")
         if not (0 < tasa_impuesto <= 1):
-            raise ErrorCalculo("La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
+            raise ErrorCalculo(
+                "La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
         if not (0 < tasa_descuento <= 1):
-            raise ErrorCalculo("La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
+            raise ErrorCalculo(
+                "La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
 
         # Orden lógico de negocio: descuento primero, luego impuesto
         costo_con_descuento = costo - costo * tasa_descuento
@@ -100,7 +107,7 @@ class CalculadoraCostos:
 
 # ---------- DEMOSTRACIÓN ----------
 if __name__ == "__main__":
-    print("=" * 60)
+    print("=" * 50)
     print("MÓDULO DE CÁLCULO DE COSTOS (métodos independientes)\n")
 
     calc = CalculadoraCostos()
@@ -113,19 +120,22 @@ if __name__ == "__main__":
 
     # 2. Costo con impuesto (19%)
     try:
-        print(f"2. Costo con impuesto 19%: ${calc.costo_con_impuesto(100, 0.19)}")
+        print(
+            f"2. Costo con impuesto 19%: ${calc.costo_con_impuesto(100, 0.19)}")
     except ErrorCalculo as e:
         print(f"2. ERROR: {e}")
 
     # 3. Costo con descuento (10%)
     try:
-        print(f"3. Costo con descuento 10%: ${calc.costo_con_descuento(100, 0.10)}")
+        print(
+            f"3. Costo con descuento 10%: ${calc.costo_con_descuento(100, 0.10)}")
     except ErrorCalculo as e:
         print(f"3. ERROR: {e}")
 
     # 4. Costo combinado (descuento 10% + impuesto 19%)
     try:
-        print(f"4. Costo combinado (10% dto. + 19% IVA): ${calc.costo_combinado(100, 0.19, 0.10)}")
+        print(
+            f"4. Costo combinado (10% dto. + 19% IVA): ${calc.costo_combinado(100, 0.19, 0.10)}")
     except ErrorCalculo as e:
         print(f"4. ERROR: {e}")
 
