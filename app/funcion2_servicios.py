@@ -2,240 +2,327 @@ from abc import ABC, abstractmethod
 import re
 
 
+# -----------------------------------------------------------------------
+# AdminServicios: guarda todos los servicios creados en un diccionario.
+# -----------------------------------------------------------------------
 class AdminServicios:
-    """Administra la colección de servicios en memoria."""
+    """Repositorio en memoria para todos los servicios del sistema."""
 
     def __init__(self) -> None:
-        self._servicios = {}
+        self._servicios: dict = {}
 
     @property
-    def servicios(self):
+    def servicios(self) -> dict:
         return self._servicios
 
-    def agregar_servicio(self, nuevo_servicio):
-        """Agrega un servicio si no existe el mismo ID."""
+    def agregar_servicio(self, nuevo_servicio: "Servicio") -> bool:
+        """Agrega un servicio al repositorio. Retorna True si tuvo éxito."""
         if not isinstance(nuevo_servicio, Servicio):
             return False
 
         if nuevo_servicio.id_servicio in self._servicios:
-            # El mismo ID ya está registrado, no se reemplaza.
-            print("Ya existe un servicio con ese ID:\n")
-            self._servicios[nuevo_servicio.id_servicio].mostrar_info()
-            print("\nUse la función actualizar_servicio")
+            print("Ya existe un servicio con ese ID:")
+            # print() aquí porque mostrar_info() retorna str, no imprime sola
+            print(self._servicios[nuevo_servicio.id_servicio].mostrar_info())
+            print("Use la función actualizar_servicio.")
             return False
 
         self._servicios[nuevo_servicio.id_servicio] = nuevo_servicio
         return True
 
-    def actualizar_servicio(self, id_servicio, nuevo_valor):
-        """Reemplaza un servicio existente por un nuevo objeto."""
-        if id_servicio in self._servicios:
-            self._servicios[id_servicio] = nuevo_valor
-            return True
-        return False
+    def actualizar_servicio(self, id_servicio: str, nuevo_servicio: "Servicio") -> bool:
+        """Reemplaza un servicio existente. Retorna True si tuvo éxito."""
+        if not isinstance(nuevo_servicio, Servicio) or id_servicio not in self._servicios:
+            return False
+
+        self._servicios[id_servicio] = nuevo_servicio
+        return True
 
 
+# Instancia de servicios
 admin_servicios = AdminServicios()
 
 
+# -----------------------------------------------------------------------
+# IDGenerador: crea IDs únicos con formato Letra+Número (ej: S100, S101).
+# -----------------------------------------------------------------------
 class IDGenerador:
-    """Genera identificadores secuenciales para servicios."""
+    """Genera IDs únicos y secuenciales para los servicios."""
 
     @staticmethod
-    def crear_id(letra, base_datos):
-        """Genera un ID unico basado en una letra inicial y una base de datos."""
-        if isinstance(letra, str) and isinstance(base_datos, dict):
-            letra = letra.upper()
-            num = 100
+    def crear_id(letra: str, base_datos: dict) -> "str | None":
+        """
+        Crea un ID que no exista en base_datos.
+        Ejemplo: si S100 ya existe, retorna S101, y así sucesivamente.
+        """
+        if not isinstance(letra, str) or not isinstance(base_datos, dict):
+            return None
 
-            while True:
-                nuevo_id = letra + str(num)
-                if nuevo_id not in base_datos:
-                    # Retorna el primer ID libre en la secuencia.
-                    return nuevo_id
-                num += 1
+        letra = letra.upper()
+        num = 100  # Los IDs empiezan desde 100 para tener siempre 3 dígitos
+
+        while True:
+            nuevo_id = letra + str(num)
+            if nuevo_id not in base_datos:
+                return nuevo_id
+            num += 1
 
 
+# -----------------------------------------------------------------------
+# Entrada: valida y transforma datos antes de guardarlos en un objeto.
+# -----------------------------------------------------------------------
 class Entrada:
-    """Clase que recibe entradas para validarlas"""
+    """Valida y convierte datos de entrada del sistema."""
 
-    def __init__(self, entrada_usuario):
-        self._entrada_usuario = entrada_usuario
+    def __init__(self, valor) -> None:
+        self._valor = valor
 
-    def es_valida(self):
-        """Valida que la cadena no sean solo espacios
-        o tenga espacios entre caracteres."""
-        # No solo espacios/saltos de línea, y sin espacios entre caracteres
-        if not isinstance(self._entrada_usuario, str):
+    def es_valida(self) -> bool:
+        """Verifica que sea un string sin espacios."""
+        if not isinstance(self._valor, str):
             return False
-        return bool(re.fullmatch(r'\S+', self._entrada_usuario))
+        return re.fullmatch(r'\S+', self._valor) is not None
 
-    def es_id_valido(self):
-        """Valida que sea un ID valido (1 Letra, 3 Numeros)"""
-        if not isinstance(self._entrada_usuario, str):
+    def es_id_valido(self) -> bool:
+        """Verifica formato de ID: una letra seguida de 3 dígitos (ej: S100)."""
+        if not isinstance(self._valor, str):
             return False
-        entrada = self._entrada_usuario.upper()
-        return bool(re.fullmatch(r'[A-Z]\d{3}', entrada))
+        return re.fullmatch(r'[A-Z]\d{3}', self._valor.upper()) is not None
 
-    def limpiar(self):
-        """Devuelve una cadena sin espacios multiples en medio, al inicio o a final"""
+    def limpiar(self) -> "str | None":
+        """Elimina espacios al inicio, al final y los dobles en medio del texto."""
+        if not isinstance(self._valor, str):
+            return None
+        resultado = self._valor.strip()
+        resultado = re.sub(r' {2,}', ' ', resultado)
+        return resultado if resultado else None
 
-        if isinstance(self._entrada_usuario, str):
-            # Quita espacios al inicio y final
-            resultado = self._entrada_usuario.strip()
-            # Reemplaza múltiples espacios en medio por uno solo
-            resultado = re.sub(r' {2,}', ' ', resultado)
-            return resultado if resultado else None
-        return str(self._entrada_usuario)
+    def _extraer_numero_porcentaje(self) -> float:
+        """Convierte la entrada a float, quitando el símbolo % si existe."""
+        if isinstance(self._valor, (int, float)):
+            return float(self._valor)
 
-    def _parse_porcentaje(self):
-        """Extrae el numero de una entrada tipo porcentaje."""
-        if isinstance(self._entrada_usuario, (int, float)):
-            return float(self._entrada_usuario)
+        if isinstance(self._valor, str):
+            texto = self._valor.strip()
+            if texto.endswith('%'):
+                texto = texto[:-1].strip()
+            return float(texto)
 
-        if isinstance(self._entrada_usuario, str):
-            entrada = self._entrada_usuario.strip()
-            # Si la entrada termina en '%', se ignora el símbolo.
-            if entrada.endswith('%'):
-                entrada = entrada[:-1].strip()
-            return float(entrada)
+        raise ValueError("No se puede convertir a porcentaje.")
 
-        raise ValueError("No es un porcentaje valido")
-
-    def es_porcentaje_valido(self):
-        """Valida que la entrada es un porcentaje positivo o cero."""
+    def es_porcentaje_valido(self) -> bool:
+        """Verifica que la entrada sea un porcentaje válido (mayor o igual a 0)."""
         try:
-            valor = self._parse_porcentaje()
-            return valor >= 0
+            return self._extraer_numero_porcentaje() >= 0
         except (ValueError, TypeError):
-            # Cualquier error en el parseo indica que la entrada no es valida.
             return False
 
-    def conv_porcentaje(self):
-        """Convierte una entrada valida a su valor decimal (porcentaje/100)."""
+    def a_decimal(self) -> float:
+        """Convierte un porcentaje a su equivalente decimal. Ej: 19 -> 0.19"""
         if not self.es_porcentaje_valido():
-            raise ValueError("La entrada no es un porcentaje valido.")
+            raise ValueError("La entrada no es un porcentaje válido.")
+        return self._extraer_numero_porcentaje() / 100
 
-        return self._parse_porcentaje() / 100
+    def a_numero(self) -> "int | float | None":
+        """Intenta convertir la entrada a int o float. Retorna None si no puede."""
+        if isinstance(self._valor, (int, float)):
+            return self._valor
+        if isinstance(self._valor, str):
+            try:
+                return int(self._valor)
+            except ValueError:
+                try:
+                    return float(self._valor)
+                except ValueError:
+                    return None
+        return None
 
 
-# CLASE ABSTRACTA SERVICIO
+# -----------------------------------------------------------------------
+# Servicio: clase abstracta base para todos los servicios del sistema.
+# -----------------------------------------------------------------------
 class Servicio(ABC):
-    """Clase abstracta Servicio"""
+    """Clase abstracta base para los servicios de Software FJ."""
 
-    @abstractmethod
-    def __init__(self, nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos):
+    def __init__(self, nombre: str, costo: float, iva: float, descuento: float, base_datos: dict) -> None:
+        # El ID se genera automáticamente usando la letra "S" y el repositorio actual
         self.__id_servicio = IDGenerador.crear_id("S", base_datos)
 
-        # Validamos el nombre usando el setter para aplicar limpieza y limite de largo.
-        self.nombre_servicio = nombre_servicio
-
-        # Usamos los setters para reutilizar validación y conversión.
-        self.costo_servicio = costo_servicio
-        self.valor_iva = valor_iva
-        self.valor_desc = valor_desc
+        # Usamos los setters directamente para que la validación ocurra al crear el objeto
+        self.nombre_servicio = nombre
+        self.costo_servicio = costo
+        self.valor_iva = iva
+        self.valor_desc = descuento
 
     @property
     def id_servicio(self):
-        """Accede a la propiedad ID servicio."""
+        """ID único del servicio. Solo lectura, no cambia una vez creado."""
         return self.__id_servicio
 
-    # ACCESO PROPIEDAD NOMBRE SERVICIO
     @property
     def nombre_servicio(self):
-        """Accede a la propiedad nombre del servicio."""
         return self.__nombre_servicio
 
     @nombre_servicio.setter
-    def nombre_servicio(self, nuevo_valor):
-        # Limpia la entrada y elimina espacios extras.
-        nuevo_valor = Entrada(str(nuevo_valor)).limpiar()
+    def nombre_servicio(self, valor: str):
+        nombre_limpio = Entrada(str(valor)).limpiar()
+        if nombre_limpio is None or not (4 <= len(nombre_limpio) <= 50):
+            raise ValueError(
+                f"El nombre '{valor}' debe tener entre 4 y 50 caracteres.")
+        self.__nombre_servicio = nombre_limpio
 
-        if nuevo_valor is not None and 4 <= len(nuevo_valor) <= 50:
-            self.__nombre_servicio = nuevo_valor
-            return
-
-        raise ValueError(
-            f"El nombre ingresado: '{nuevo_valor}' excede el limite de caracteres (4-50) o no es valido.")
-
-    # ACCESO PROPIEDAD COSTO SERVICIO
     @property
-    def costo_servicio(self):
-        """Accede a la propiedad costo del servicio."""
+    def costo_servicio(self) -> float:
         return self.__costo_servicio
 
     @costo_servicio.setter
-    def costo_servicio(self, nuevo_valor):
-        try:
-            nuevo_valor = float(nuevo_valor)
-            self.__costo_servicio = nuevo_valor
-
-        except Exception as exc:
-            raise ValueError(
-                "El valor ingresado debe de ser un numero valido.") from exc
+    def costo_servicio(self, valor) -> None:
+        numero = Entrada(str(valor)).a_numero()
+        if numero is None or numero < 0:
+            raise ValueError("El costo debe ser un número mayor o igual a 0.")
+        self.__costo_servicio = float(numero)
 
     @property
-    def valor_iva(self):
+    def valor_iva(self) -> float:
+        """IVA almacenado como decimal. Ej: 19% se guarda como 0.19"""
         return self.__valor_iva
 
     @valor_iva.setter
-    def valor_iva(self, nuevo_valor):
-        self.__valor_iva = Entrada(nuevo_valor).conv_porcentaje()
+    def valor_iva(self, valor) -> None:
+        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioIVAInvalidoError
+        self.__valor_iva = Entrada(valor).a_decimal()
 
     @property
-    def valor_desc(self):
+    def valor_desc(self) -> float:
+        """Descuento almacenado como decimal. Ej: 10% se guarda como 0.10"""
         return self.__valor_desc
 
     @valor_desc.setter
-    def valor_desc(self, nuevo_valor):
-        self.__valor_desc = Entrada(nuevo_valor).conv_porcentaje()
+    def valor_desc(self, valor) -> None:
+        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioDescuentoInvalidoError
+        self.__valor_desc = Entrada(valor).a_decimal()
 
-    def mostrar_info(self):
-        """Muestra la informacion del servicio."""
-        return f"""INFORMACION DEL SERVICIO:
-- ID: {self.id_servicio}
-- Nombre: {self.nombre_servicio}
-- Costo: ${self.costo_servicio}
-- Porc. IVA: {self.valor_iva*100}%
-- Porc.Desc: {self.valor_desc*100}%"""
+    def calcular_costo_servicio(self, iva_ok: bool = False, disc_ok: bool = False) -> float:
+        """
+        Calcula el costo final del servicio.
 
-    def calcular_costos(self):
-        """Calcula el costo final aplicando IVA y descuento."""
-        total_pago = self.costo_servicio
+        iva_ok  -> si es True, suma el IVA al costo base.
+        disc_ok -> si es True, aplica el descuento sobre el precio (después del IVA).
 
-        # Suma IVA sobre el costo actual.
-        if self.valor_iva > 0:
-            total_pago += total_pago * self.valor_iva
-        # Aplica descuento sobre el total actual, después de IVA si ya se agregó.
-        if self.valor_desc > 0:
-            total_pago -= total_pago * self.valor_desc
+        Ejemplo con costo=100, iva=19%, desc=10%:
+        calcular_costo_servicio(iva_ok=True, disc_ok=True) -> 107.10
+        """
+        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioCostoInvalidoError si costo <= 0
+        costo = self.costo_servicio
 
-        return total_pago
+        if iva_ok:
+            costo += costo * self.valor_iva
+
+        if disc_ok:
+            costo -= costo * self.valor_desc
+
+        return costo
+
+    @abstractmethod
+    def mostrar_info(self) -> str:
+        """
+        Retorna un string con la información del servicio.
+        Cada subclase define su propio formato.
+        """
+        ...
+
+    def __str__(self) -> str:
+        # Permite usar print(servicio) directamente sin llamar mostrar_info() aparte
+        return self.mostrar_info()
+
+    def __repr__(self) -> str:
+        # Úmuestra el tipo y datos clave del objeto
+        return f"{self.__class__.__name__}(id='{self.id_servicio}', nombre='{self.nombre_servicio}')"
 
 
-# SERVICIOS
+# -----------------------------------------------------------------------
+# ReservaSala: servicio para reservar salas de reuniones.
+# -----------------------------------------------------------------------
 class ReservaSala(Servicio):
-    """Servicio Reserva de Salas"""
+    """Servicio de reserva de salas de reuniones."""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Reserva de Salas"):
-        if base_datos is None:
-            base_datos = admin_servicios.servicios
-        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
+    def __init__(
+        self,
+        costo: float,
+        iva: float,
+        descuento: float,
+        base_datos: "dict | None" = None,
+        nombre: str = "Reserva de Salas"
+    ) -> None:
+        # Si no recibe, usa el global compartido con todos los módulos
+        base_datos = base_datos or admin_servicios.servicios
+        super().__init__(nombre, costo, iva, descuento, base_datos)
+
+    def mostrar_info(self) -> str:
+        """Retorna la información de la reserva de sala formateada."""
+        return (
+            f"RESERVA DE SALAS:\n"
+            f"  ID:         {self.id_servicio}\n"
+            f"  Nombre:     {self.nombre_servicio}\n"
+            f"  Costo base: ${self.costo_servicio:.2f}\n"
+            f"  IVA:        {self.valor_iva * 100:.1f}%\n"
+            f"  Descuento:  {self.valor_desc * 100:.1f}%"
+        )
 
 
+# -----------------------------------------------------------------------
+# AlquilerEquipo: servicio para alquilar equipos tecnológicos por día.
+# -----------------------------------------------------------------------
 class AlquilerEquipo(Servicio):
-    """Servicio Alquiler Equipo"""
+    """Servicio de alquiler de equipos (computadores, proyectores, etc.)."""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Alquiler Equipo"):
-        if base_datos is None:
-            base_datos = admin_servicios.servicios
-        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
+    def __init__(
+        self,
+        costo: float,
+        iva: float,
+        descuento: float,
+        base_datos: "dict | None" = None,
+        nombre: str = "Alquiler de Equipo"
+    ) -> None:
+        base_datos = base_datos or admin_servicios.servicios
+        super().__init__(nombre, costo, iva, descuento, base_datos)
+
+    def mostrar_info(self) -> str:
+        """Retorna la información del alquiler de equipo formateada."""
+        return (
+            f"ALQUILER DE EQUIPO:\n"
+            f"  ID:        {self.id_servicio}\n"
+            f"  Nombre:    {self.nombre_servicio}\n"
+            f"  Costo/día: ${self.costo_servicio:.2f}\n"
+            f"  IVA:       {self.valor_iva * 100:.1f}%\n"
+            f"  Descuento: {self.valor_desc * 100:.1f}%"
+        )
 
 
+# -----------------------------------------------------------------------
+# AsesoriaEspecializada: servicio de consultoría por hora.
+# -----------------------------------------------------------------------
 class AsesoriaEspecializada(Servicio):
-    """Servicio Asesoria Especializada"""
+    """Servicio de asesoría especializada facturado por hora."""
 
-    def __init__(self, costo_servicio, valor_iva, valor_desc, base_datos=None, nombre_servicio="Asesoria Especializada"):
-        if base_datos is None:
-            base_datos = admin_servicios.servicios
-        super().__init__(nombre_servicio, costo_servicio, valor_iva, valor_desc, base_datos)
+    def __init__(
+        self,
+        costo: float,
+        iva: float,
+        descuento: float,
+        base_datos: "dict | None" = None,
+        nombre: str = "Asesoría Especializada"
+    ) -> None:
+        base_datos = base_datos or admin_servicios.servicios
+        super().__init__(nombre, costo, iva, descuento, base_datos)
+
+    def mostrar_info(self) -> str:
+        """Retorna la información de la asesoría especializada formateada."""
+        return (
+            f"ASESORÍA ESPECIALIZADA:\n"
+            f"  ID:         {self.id_servicio}\n"
+            f"  Nombre:     {self.nombre_servicio}\n"
+            f"  Costo/hora: ${self.costo_servicio:.2f}\n"
+            f"  IVA:        {self.valor_iva * 100:.1f}%\n"
+            f"  Descuento:  {self.valor_desc * 100:.1f}%"
+        )
