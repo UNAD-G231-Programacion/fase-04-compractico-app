@@ -51,3 +51,34 @@ class ErrorClienteNoEncontrado(ErrorCliente):
 # Error para validaciones de formato (ej. correo mal escrito o campos vacíos)
 class ErrorDatoInvalido(ErrorCliente):
     pass
+
+# ─────────────────────────────────────────────
+# CLASE ABSTRACTA
+# ─────────────────────────────────────────────
+
+# Una clase abstracta es un "molde" que no se puede usar directamente, 
+# sirve para que otras clases hereden de ella.
+class EntidadSistema(ABC):
+
+    def __init__(self, id_entidad: str):
+        # El guion bajo (_) indica que este atributo es "protegido".
+        # Es una buena práctica para encapsular los datos.
+        self._id_entidad = id_entidad
+
+    @property
+    def id_entidad(self):
+        # Este decorador permite leer el ID, pero no modificarlo fácilmente.
+        # Funciona como un método "getter".
+        return self._id_entidad
+
+    @abstractmethod
+    def validar(self):
+        # Al ser un método abstracto, no tiene código aquí (pass).
+        # Obliga a que cualquier clase hija (ej. Cliente) cree su propia validación.
+        pass
+
+    @abstractmethod
+    def describir(self):
+        # Al igual que validar, obliga a las clases hijas a implementar
+        # un método que devuelva una descripción de la entidad.
+        pass
