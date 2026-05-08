@@ -82,3 +82,16 @@ class EntidadSistema(ABC):
         # Al igual que validar, obliga a las clases hijas a implementar
         # un método que devuelva una descripción de la entidad.
         pass
+
+# ─────────────────────────────────────────────
+# CLASE CLIENTE
+# ─────────────────────────────────────────────
+
+# La clase Cliente hereda de EntidadSistema, cumpliendo el "contrato" anterior.
+class Cliente(EntidadSistema):
+
+    # Atributo de clase: Un diccionario que funciona como una pequeña base de datos 
+    # en memoria para almacenar a todos los clientes creados, usando su ID como llave.
+    _clientes_por_id: Dict[str, "Cliente"] = {}
+
+    
