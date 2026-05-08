@@ -1,7 +1,6 @@
 # ── MÓDULO 5: SISTEMA DE LOGS Y SIMULACIÓN INTEGRAL ─────────────
 # Autor: Leonel Pantoja
-# Curso: Programación - UNAD
-#
+
 # Descripción:
 # Este módulo realiza una simulación integral del sistema de gestión
 # de clientes, servicios y reservas. Incluye manejo de errores,
