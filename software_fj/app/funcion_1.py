@@ -153,3 +153,15 @@ class Cliente(EntidadSistema):
         # Retorna una cadena de texto formateada con los detalles del cliente.
         return f"Cliente: {self.nombre}, Correo: {self.correo}, Tel: {self.telefono}"
     
+    # ─── GESTIÓN DE CLIENTES ───
+
+    @classmethod
+    def agregar_cliente(cls, cliente):
+        # Verifica si el ID del cliente ya existe en el diccionario global.
+        # Si existe, lanza la excepción personalizada que creamos al inicio.
+        if cliente.id_entidad in cls._clientes_por_id:
+            raise ErrorClienteDuplicado(f"El cliente con ID {cliente.id_entidad} ya está registrado")
+        
+        # Si es nuevo, lo guarda en el diccionario usando el ID como clave.
+        cls._clientes_por_id[cliente.id_entidad] = cliente
+    
