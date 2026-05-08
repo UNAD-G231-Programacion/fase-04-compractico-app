@@ -140,3 +140,11 @@ class Cliente(EntidadSistema):
         if not valor.isdigit() or not (7 <= len(valor) <= 15):
             raise ErrorDatoInvalido("Teléfono inválido: Debe tener entre 7 y 15 dígitos numéricos")
         self._telefono = valor
+    
+    # ─── IMPLEMENTACIÓN DE MÉTODOS ABSTRACTOS ───
+
+    def validar(self):
+        # Implementación del método obligatorio de EntidadSistema.
+        # En este punto, si el objeto se creó, ya pasó por los setters 
+        # que validaron los datos, por lo que retorna True.
+        return True
