@@ -175,3 +175,9 @@ class Cliente(EntidadSistema):
         # Retorna el objeto Cliente completo si la búsqueda es exitosa.
         return cls._clientes_por_id[id_cliente]
     
+    @classmethod
+    def listar_clientes(cls):
+        # Convierte todos los valores del diccionario (los objetos Cliente) 
+        # en una lista simple para facilitar su visualización o iteración.
+        return list(cls._clientes_por_id.values())
+    
