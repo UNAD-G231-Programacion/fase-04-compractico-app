@@ -102,3 +102,17 @@ class Cliente(EntidadSistema):
         self.nombre = nombre
         self.correo = correo
         self.telefono = telefono
+    
+    # ─── ENCAPSULACIÓN Y VALIDACIONES ───
+
+    @property
+    def nombre(self):
+        # Devuelve el valor del atributo privado _nombre
+        return self._nombre
+
+    @nombre.setter
+    def nombre(self, valor: str):
+        # Valida que el nombre solo tenga letras y espacios, mínimo 3 caracteres
+        if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,}$", valor):
+            raise ErrorDatoInvalido("Nombre inválido: Debe contener solo letras y mínimo 3 caracteres")
+        self._nombre = valor
