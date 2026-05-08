@@ -173,3 +173,9 @@ if __name__ == "__main__":
 
     print("\n" + "=" * 60)
     print("El sistema permanece estable. Todas las variantes listas para integración.")
+
+
+# excepciones.py
+class ErrorCalculo(Exception):
+    """Excepción lanzada cuando ocurre un error en los cálculos de costo."""
+    pass
