@@ -22,7 +22,6 @@ class AdminServicios:
 
         if nuevo_servicio.id_servicio in self._servicios:
             print("Ya existe un servicio con ese ID:")
-            # print() aquí porque mostrar_info() retorna str, no imprime sola
             print(self._servicios[nuevo_servicio.id_servicio].mostrar_info())
             print("Use la función actualizar_servicio.")
             return False
@@ -227,7 +226,6 @@ class Servicio(ABC):
     def mostrar_info(self) -> str:
         """
         Retorna un string con la información del servicio.
-        Cada subclase define su propio formato.
         """
         ...
 
@@ -259,7 +257,7 @@ class ReservaSala(Servicio):
         super().__init__(nombre, costo, iva, descuento, base_datos)
 
     def mostrar_info(self) -> str:
-        """Retorna la información de la reserva de sala formateada."""
+        """Retorna la información de la reserva de sala"""
         return (
             f"RESERVA DE SALAS:\n"
             f"  ID:         {self.id_servicio}\n"
@@ -288,7 +286,7 @@ class AlquilerEquipo(Servicio):
         super().__init__(nombre, costo, iva, descuento, base_datos)
 
     def mostrar_info(self) -> str:
-        """Retorna la información del alquiler de equipo formateada."""
+        """Retorna la información del alquiler de equipo"""
         return (
             f"ALQUILER DE EQUIPO:\n"
             f"  ID:        {self.id_servicio}\n"
@@ -317,7 +315,7 @@ class AsesoriaEspecializada(Servicio):
         super().__init__(nombre, costo, iva, descuento, base_datos)
 
     def mostrar_info(self) -> str:
-        """Retorna la información de la asesoría especializada formateada."""
+        """Retorna la información de la asesoría especializada"""
         return (
             f"ASESORÍA ESPECIALIZADA:\n"
             f"  ID:         {self.id_servicio}\n"
@@ -326,3 +324,15 @@ class AsesoriaEspecializada(Servicio):
             f"  IVA:        {self.valor_iva * 100:.1f}%\n"
             f"  Descuento:  {self.valor_desc * 100:.1f}%"
         )
+
+
+# === PRUEBA DE CODIGO ===
+alquiler = AlquilerEquipo(12400, 12, 5, base_datos=admin_servicios.servicios)
+asesoria = AsesoriaEspecializada(
+    200000, 0, 1, base_datos=admin_servicios.servicios)
+
+print(alquiler.mostrar_info())
+print(asesoria.mostrar_info())
+admin_servicios.agregar_servicio(alquiler)
+admin_servicios.agregar_servicio(asesoria)
+print(admin_servicios.servicios)
