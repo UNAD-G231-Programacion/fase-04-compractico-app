@@ -94,4 +94,11 @@ class Cliente(EntidadSistema):
     # en memoria para almacenar a todos los clientes creados, usando su ID como llave.
     _clientes_por_id: Dict[str, "Cliente"] = {}
 
-    
+    def __init__(self, id_cliente: str, nombre: str, correo: str, telefono: str):
+        # Llama al constructor de la clase padre (EntidadSistema) para asignar el ID.
+        super().__init__(id_cliente)
+        
+        # Asigna los atributos específicos de un cliente.
+        self.nombre = nombre
+        self.correo = correo
+        self.telefono = telefono
