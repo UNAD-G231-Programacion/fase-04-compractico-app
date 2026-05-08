@@ -324,15 +324,3 @@ class AsesoriaEspecializada(Servicio):
             f"  IVA:        {self.valor_iva * 100:.1f}%\n"
             f"  Descuento:  {self.valor_desc * 100:.1f}%"
         )
-
-
-# === PRUEBA DE CODIGO ===
-alquiler = AlquilerEquipo(12400, 12, 5, base_datos=admin_servicios.servicios)
-asesoria = AsesoriaEspecializada(
-    200000, 0, 1, base_datos=admin_servicios.servicios)
-
-print(alquiler.mostrar_info())
-print(asesoria.mostrar_info())
-admin_servicios.agregar_servicio(alquiler)
-admin_servicios.agregar_servicio(asesoria)
-print(admin_servicios.servicios)
