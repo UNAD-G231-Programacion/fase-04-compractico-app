@@ -2,6 +2,7 @@ from datetime import datetime
 
 # EXCEPCIONES PERSONALIZADAS
 
+
 class ReservaError(Exception):
     """Excepción general para errores de reserva"""
     pass
@@ -11,7 +12,8 @@ class EstadoReservaError(ReservaError):
     """Error relacionado con el estado de la reserva"""
     pass
 
-# Clase principal de reservas del sistema 
+# Clase principal de reservas del sistema
+
 
 class Reserva:
 
@@ -20,23 +22,23 @@ class Reserva:
     ESTADO_CONFIRMADA = "CONFIRMADA"
     ESTADO_CANCELADA = "CANCELADA"
 
-    # Lista global de reservas registradas 
+    # Lista global de reservas registradas
     lista_reservas = []
 
     def __init__(self, cliente, servicio, duracion):
         """
         Constructor de la clase Reserva
         """
-        #Datos principales de la reserva 
+        # Datos principales de la reserva
         self.cliente = cliente
         self.servicio = servicio
         self.duracion = duracion
-        #Estado inicial de la reserva
+        # Estado inicial de la reserva
         self.estado = Reserva.ESTADO_PENDIENTE
-        #Fecha de creacion 
+        # Fecha de creacion
         self.fecha = datetime.now()
 
-        #Validacion inicial de datos
+        # Validacion inicial de datos
 
         self.validar()
 
@@ -58,12 +60,12 @@ class Reserva:
         # Validar duración numerica
         if not isinstance(self.duracion, (int, float)):
             raise ReservaError("La duración debe ser numérica")
-        
-        #Verifica duracion positiva
+
+        # Verifica duracion positiva
 
         if self.duracion <= 0:
             raise ReservaError("La duración debe ser mayor a 0")
-        
+
     # CONFIRMAR RESERVA
     # try / except / else
     def confirmar(self):
