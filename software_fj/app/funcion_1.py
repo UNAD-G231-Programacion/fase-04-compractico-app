@@ -116,3 +116,15 @@ class Cliente(EntidadSistema):
         if not re.match(r"^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]{3,}$", valor):
             raise ErrorDatoInvalido("Nombre inválido: Debe contener solo letras y mínimo 3 caracteres")
         self._nombre = valor
+    
+    @property
+    def correo(self):
+        # Devuelve el valor del atributo privado _correo
+        return self._correo
+
+    @correo.setter
+    def correo(self, valor: str):
+        # Usa una expresión regular para validar el formato estándar de un email
+        if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", valor):
+            raise ErrorDatoInvalido("Correo inválido: Formato no reconocido")
+        self._correo = valor
