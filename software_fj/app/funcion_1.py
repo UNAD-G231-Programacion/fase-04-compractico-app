@@ -165,3 +165,13 @@ class Cliente(EntidadSistema):
         # Si es nuevo, lo guarda en el diccionario usando el ID como clave.
         cls._clientes_por_id[cliente.id_entidad] = cliente
     
+    @classmethod
+    def buscar_cliente(cls, id_cliente):
+        # Busca un ID específico en el diccionario.
+        # Si no lo encuentra, lanza una excepción controlada.
+        if id_cliente not in cls._clientes_por_id:
+            raise ErrorClienteNoEncontrado(f"No se encontró ningún cliente con el ID: {id_cliente}")
+        
+        # Retorna el objeto Cliente completo si la búsqueda es exitosa.
+        return cls._clientes_por_id[id_cliente]
+    
