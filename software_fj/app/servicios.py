@@ -1,6 +1,38 @@
 from abc import ABC, abstractmethod
 import re
 
+# -----------------------------------------------------------------------
+# EXCEPCIONES MODULO SERVICIOS: Excepciones personalizadas para servicios.
+# -----------------------------------------------------------------------
+
+
+class ServicioError(Exception):
+    """Error base del módulo de servicios."""
+
+    def __init__(self, mensaje, valor_recibido=None):
+        super().__init__(mensaje)
+        self.valor_recibido = valor_recibido
+
+
+class ServicioNombreInvalidoError(ServicioError):
+    """Se lanza cuando el nombre del servicio no cumple las reglas."""
+    pass
+
+
+class ServicioCostoInvalidoError(ServicioError):
+    """Se lanza cuando el costo del servicio es inválido."""
+    pass
+
+
+class ServicioIVAInvalidoError(ServicioError):
+    """Se lanza cuando la tasa de IVA es inválida."""
+    pass
+
+
+class ServicioDescuentoInvalidoError(ServicioError):
+    """Se lanza cuando la tasa de descuento es inválida."""
+    pass
+
 
 # -----------------------------------------------------------------------
 # AdminServicios: guarda todos los servicios creados en un diccionario.
@@ -166,7 +198,7 @@ class Servicio(ABC):
     def nombre_servicio(self, valor: str):
         nombre_limpio = Entrada(str(valor)).limpiar()
         if nombre_limpio is None or not (4 <= len(nombre_limpio) <= 50):
-            raise ValueError(
+            raise ServicioNombreInvalidoError(
                 f"El nombre '{valor}' debe tener entre 4 y 50 caracteres.")
         self.__nombre_servicio = nombre_limpio
 
@@ -178,7 +210,8 @@ class Servicio(ABC):
     def costo_servicio(self, valor) -> None:
         numero = Entrada(str(valor)).a_numero()
         if numero is None or numero < 0:
-            raise ValueError("El costo debe ser un número mayor o igual a 0.")
+            raise ServicioCostoInvalidoError(
+                "El costo debe ser un número mayor o igual a 0.", valor_recibido=valor)
         self.__costo_servicio = float(numero)
 
     @property
@@ -188,8 +221,11 @@ class Servicio(ABC):
 
     @valor_iva.setter
     def valor_iva(self, valor) -> None:
-        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioIVAInvalidoError
-        self.__valor_iva = Entrada(valor).a_decimal()
+        try:
+            self.__valor_iva = Entrada(valor).a_decimal()
+        except ValueError as e:
+            raise ServicioIVAInvalidoError(
+                "La tasa de IVA no es válida.", valor_recibido=valor) from e
 
     @property
     def valor_desc(self) -> float:
@@ -198,8 +234,11 @@ class Servicio(ABC):
 
     @valor_desc.setter
     def valor_desc(self, valor) -> None:
-        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioDescuentoInvalidoError
-        self.__valor_desc = Entrada(valor).a_decimal()
+        try:
+            self.__valor_desc = Entrada(valor).a_decimal()
+        except ValueError as e:
+            raise ServicioDescuentoInvalidoError(
+                "La tasa de descuento no es válida.", valor_recibido=valor) from e
 
     def calcular_costo_servicio(self, iva_ok: bool = False, disc_ok: bool = False) -> float:
         """
@@ -324,3 +363,10 @@ class AsesoriaEspecializada(Servicio):
             f"  IVA:        {self.valor_iva * 100:.1f}%\n"
             f"  Descuento:  {self.valor_desc * 100:.1f}%"
         )
+
+
+# === PRUEBAS excepciones ===
+if __name__ == "__main__":
+    mi_servicio = AsesoriaEspecializada(12000, 30, 12)
+    print(mi_servicio.mostrar_info())
+    mi_servicio.costo_servicio = "ABDFTEJSLK"
