@@ -1,0 +1,11 @@
+2026-05-07 21:25:13,460 - ERROR - Error en servicios: name 'ReservaSala' is not defined
+2026-05-07 21:25:13,460 - ERROR - Servicio inválido: name 'ReservaSala' is not defined
+2026-05-07 21:25:13,461 - ERROR - Error en reservas: name 'Reserva' is not defined
+2026-05-07 21:25:13,462 - ERROR - Reserva inválida: name 'Reserva' is not defined
+2026-05-07 21:25:13,462 - ERROR - Error al mostrar reservas: name 'Reserva' is not defined
+2026-05-07 21:32:20,280 - ERROR - Servicio inválido detectado correctamente: El costo base debe ser mayor que cero.
+2026-05-07 21:32:20,281 - ERROR - Cliente inválido detectado correctamente: El nombre del cliente no puede estar vacío.
+2026-05-07 21:32:20,282 - ERROR - Reserva inválida detectada correctamente: La reserva debe tener un cliente válido.
+2026-05-07 21:32:20,282 - ERROR - Reserva inválida detectada correctamente: La duración de la reserva debe ser mayor que cero.
+2026-05-07 21:32:20,283 - ERROR - Reserva inválida detectada correctamente: La reserva debe tener un servicio válido.
+2026-05-07 21:32:20,283 - ERROR - Operación no permitida detectada correctamente: No se puede cancelar una reserva ya procesada.
