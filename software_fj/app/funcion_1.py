@@ -148,3 +148,8 @@ class Cliente(EntidadSistema):
         # En este punto, si el objeto se creó, ya pasó por los setters 
         # que validaron los datos, por lo que retorna True.
         return True
+    def describir(self):
+        # Implementación del método obligatorio para mostrar la información.
+        # Retorna una cadena de texto formateada con los detalles del cliente.
+        return f"Cliente: {self.nombre}, Correo: {self.correo}, Tel: {self.telefono}"
+    
