@@ -128,3 +128,15 @@ class Cliente(EntidadSistema):
         if not re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", valor):
             raise ErrorDatoInvalido("Correo inválido: Formato no reconocido")
         self._correo = valor
+    
+    @property
+    def telefono(self):
+        # Devuelve el valor del atributo privado _telefono
+        return self._telefono
+
+    @telefono.setter
+    def telefono(self, valor: str):
+        # Valida que sean solo números y tengan una longitud entre 7 y 15 dígitos
+        if not valor.isdigit() or not (7 <= len(valor) <= 15):
+            raise ErrorDatoInvalido("Teléfono inválido: Debe tener entre 7 y 15 dígitos numéricos")
+        self._telefono = valor
