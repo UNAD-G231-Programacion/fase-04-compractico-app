@@ -70,3 +70,187 @@
 2026-05-09 11:11:51,385 - ERROR - Error al cancelar reserva: No se puede cancelar una reserva ya procesada
 2026-05-09 11:11:51,385 - ERROR - Cancelación no permitida detectada: Falló la cancelación de la reserva
 2026-05-09 11:11:51,386 - ERROR - Error al mostrar reservas: 'NoneType' object has no attribute 'nombre'
+2026-05-09 11:53:01,155 - INFO - Servicio creado: RESERVA DE SALAS:
+  ID:         S100
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+2026-05-09 11:53:01,156 - INFO - Servicio creado: ALQUILER DE EQUIPO:
+  ID:        S100
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+2026-05-09 11:53:01,156 - INFO - Servicio creado: ASESORÍA ESPECIALIZADA:
+  ID:         S100
+  Nombre:     Asesoría Especializada
+  Costo/hora: $250000.00
+  IVA:        0.0%
+  Descuento:  15.0%
+2026-05-09 11:53:01,156 - ERROR - Servicio inválido detectado: El costo debe ser un número mayor o igual a 0.
+2026-05-09 11:53:01,156 - INFO - Cliente registrado: Cliente: Carlos Pérez, Correo: carlos@mail.com, Tel: 3001112233
+2026-05-09 11:53:01,156 - INFO - Cliente registrado: Cliente: Laura Gómez, Correo: laura@mail.com, Tel: 3104445566
+2026-05-09 11:53:01,156 - ERROR - Cliente inválido detectado: Nombre inválido: Debe contener solo letras y mínimo 3 caracteres
+2026-05-09 11:53:01,157 - INFO - Reserva confirmada: Reserva R100:
+  Cliente:  Carlos Pérez
+  Servicio: RESERVA DE SALAS:
+  ID:         S100
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+  Estado:   CONFIRMADA
+  Duración: 2 horas
+  Fecha:    2026-05-09 11:53:01.157046
+2026-05-09 11:53:01,157 - INFO - Reserva confirmada: Reserva R101:
+  Cliente:  Laura Gómez
+  Servicio: ALQUILER DE EQUIPO:
+  ID:        S100
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+  Estado:   CONFIRMADA
+  Duración: 1 horas
+  Fecha:    2026-05-09 11:53:01.157059
+2026-05-09 11:53:01,157 - INFO - Reserva procesada: Reserva R100:
+  Cliente:  Carlos Pérez
+  Servicio: RESERVA DE SALAS:
+  ID:         S100
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+  Estado:   PROCESADA
+  Duración: 2 horas
+  Fecha:    2026-05-09 11:53:01.157046
+2026-05-09 11:53:01,157 - INFO - Reserva cancelada: Reserva R101:
+  Cliente:  Laura Gómez
+  Servicio: ALQUILER DE EQUIPO:
+  ID:        S100
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+  Estado:   CANCELADA
+  Duración: 1 horas
+  Fecha:    2026-05-09 11:53:01.157059
+2026-05-09 11:53:01,157 - ERROR - Reserva inválida (cliente nulo): El cliente no es una instancia válida de Cliente
+2026-05-09 11:53:01,157 - ERROR - Reserva inválida (duración negativa): La duración debe ser mayor a 0
+2026-05-09 11:53:01,157 - ERROR - Reserva inválida (servicio nulo): El servicio no es una instancia válida de Servicio
+2026-05-09 11:53:01,157 - ERROR - Error al cancelar reserva: No se puede cancelar una reserva ya procesada
+2026-05-09 11:53:01,157 - ERROR - Cancelación no permitida detectada: Falló la cancelación de la reserva
+2026-05-09 11:53:01,157 - ERROR - Error al mostrar reservas: 'NoneType' object has no attribute 'nombre'
+2026-05-09 11:56:41,778 - INFO - Servicio creado: RESERVA DE SALAS:
+  ID:         S101
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+2026-05-09 11:56:41,778 - INFO - Servicio creado: ALQUILER DE EQUIPO:
+  ID:        S101
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+2026-05-09 11:56:41,778 - INFO - Servicio creado: ASESORÍA ESPECIALIZADA:
+  ID:         S101
+  Nombre:     Asesoría Especializada
+  Costo/hora: $250000.00
+  IVA:        0.0%
+  Descuento:  15.0%
+2026-05-09 11:56:41,778 - ERROR - Servicio inválido detectado: El costo debe ser un número mayor o igual a 0.
+2026-05-09 11:56:41,778 - INFO - Cliente registrado: Cliente: Carlos Pérez, Correo: carlos@mail.com, Tel: 3001112233
+2026-05-09 11:56:41,778 - INFO - Cliente registrado: Cliente: Laura Gómez, Correo: laura@mail.com, Tel: 3104445566
+2026-05-09 11:56:41,778 - ERROR - Cliente inválido detectado: Nombre inválido: Debe contener solo letras y mínimo 3 caracteres
+2026-05-09 11:56:41,778 - INFO - Reserva confirmada: Reserva R100:
+  Cliente:  Carlos Pérez
+  Servicio: RESERVA DE SALAS:
+  ID:         S101
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+  Estado:   CONFIRMADA
+  Duración: 2 horas
+  Fecha:    2026-05-09 11:56:41.778801
+2026-05-09 11:56:41,778 - INFO - Reserva confirmada: Reserva R101:
+  Cliente:  Laura Gómez
+  Servicio: ALQUILER DE EQUIPO:
+  ID:        S101
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+  Estado:   CONFIRMADA
+  Duración: 1 horas
+  Fecha:    2026-05-09 11:56:41.778813
+2026-05-09 11:56:41,778 - INFO - Reserva procesada: Reserva R100:
+  Cliente:  Carlos Pérez
+  Servicio: RESERVA DE SALAS:
+  ID:         S101
+  Nombre:     Reserva de Salas
+  Costo base: $150000.00
+  IVA:        19.0%
+  Descuento:  10.0%
+  Estado:   PROCESADA
+  Duración: 2 horas
+  Fecha:    2026-05-09 11:56:41.778801
+2026-05-09 11:56:41,778 - INFO - Reserva cancelada: Reserva R101:
+  Cliente:  Laura Gómez
+  Servicio: ALQUILER DE EQUIPO:
+  ID:        S101
+  Nombre:    Alquiler de Equipo
+  Costo/día: $80000.00
+  IVA:       19.0%
+  Descuento: 5.0%
+  Estado:   CANCELADA
+  Duración: 1 horas
+  Fecha:    2026-05-09 11:56:41.778813
+2026-05-09 11:56:41,779 - ERROR - Reserva inválida (cliente nulo): El cliente no es una instancia válida de Cliente
+2026-05-09 11:56:41,779 - ERROR - Reserva inválida (duración negativa): La duración debe ser mayor a 0
+2026-05-09 11:56:41,779 - ERROR - Reserva inválida (servicio nulo): El servicio no es una instancia válida de Servicio
+2026-05-09 11:56:41,779 - ERROR - Error al cancelar reserva: No se puede cancelar una reserva ya procesada
+2026-05-09 11:56:41,779 - ERROR - Cancelación no permitida detectada: Falló la cancelación de la reserva
+2026-05-09 11:56:41,779 - ERROR - Error al mostrar reservas: 'NoneType' object has no attribute 'nombre'
+2026-05-09 12:18:26,091 - INFO - Sistema iniciado. Logs en tiempo real activados.
+2026-05-09 12:20:38,452 - INFO - Cliente registrado: Cliente: Esteban Perez, Correo: daniel@gmail.com, Tel: 310568975
+2026-05-09 12:21:14,388 - INFO - Ventana de logs limpiada por el usuario.
+2026-05-09 12:21:39,977 - INFO - Servicio creado: RESERVA DE SALAS:
+  ID:         S100
+  Nombre:     Reserva de Salas
+  Costo base: $60000.00
+  IVA:        47.0%
+  Descuento:  10.0%
+2026-05-09 12:22:15,618 - INFO - Reserva creada: Reserva R100:
+  Cliente:  Esteban Perez
+  Servicio: RESERVA DE SALAS:
+  ID:         S100
+  Nombre:     Reserva de Salas
+  Costo base: $60000.00
+  IVA:        47.0%
+  Descuento:  10.0%
+  Estado:   PENDIENTE
+  Duración: 5.0 horas
+  Fecha:    2026-05-09 12:22:14.379055
+2026-05-09 12:22:28,653 - INFO - Reserva confirmada: R100
+2026-05-09 12:22:58,202 - INFO - Servicio creado: RESERVA DE SALAS:
+  ID:         S101
+  Nombre:     Reserva de Salas
+  Costo base: $60000.00
+  IVA:        120.0%
+  Descuento:  10.0%
+2026-05-09 12:23:10,364 - INFO - Reserva creada: Reserva R101:
+  Cliente:  Esteban Perez
+  Servicio: RESERVA DE SALAS:
+  ID:         S101
+  Nombre:     Reserva de Salas
+  Costo base: $60000.00
+  IVA:        120.0%
+  Descuento:  10.0%
+  Estado:   PENDIENTE
+  Duración: 12.0 horas
+  Fecha:    2026-05-09 12:23:08.459003
+2026-05-09 12:23:49,939 - ERROR - Error al confirmar reserva: Error al calcular costo del servicio S101: La tasa de impuesto debe estar entre 0 y 1.
+2026-05-09 12:23:51,463 - ERROR - Error al confirmar reserva: Falló la confirmación de la reserva

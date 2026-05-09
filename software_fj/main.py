@@ -1,5 +1,8 @@
 # main.py - Punto de entrada del sistema Software FJ
-from app.logs import simulacion_integral
+import tkinter as tk
+from app.interfaz import InterfazSistema
 
 if __name__ == "__main__":
-    simulacion_integral()
+    root = tk.Tk()
+    app = InterfazSistema(root)
+    root.mainloop()
