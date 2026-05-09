@@ -14,397 +14,205 @@
 # ────────────────────────────────────────────────────────────────
 
 import logging
+import os
 
+# Importación de las clases oficiales del sistema
+from .entidades_base import Cliente
+from .servicios import (
+    Servicio,
+    AdminServicios,
+    admin_servicios,
+    ReservaSala,
+    AlquilerEquipo,
+    AsesoriaEspecializada,
+)
+from .calculos import CalculadoraCostos, ErrorCalculo
+from .reservas import Reserva, ReservaError, EstadoReservaError
 
 # ── CONFIGURACIÓN DEL SISTEMA DE LOGS ───────────────────────────
+# Obtener la ruta absoluta a la carpeta 'logs' (sube un nivel desde app/ y entra a logs/)
+ruta_logs = os.path.join(os.path.dirname(__file__), "..", "logs")
+os.makedirs(ruta_logs, exist_ok=True)
+
+archivo_log = os.path.join(ruta_logs, "sistema.log")
 
 logging.basicConfig(
-    filename="logs.txt",
-    level=logging.ERROR,
+    filename=archivo_log,
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    encoding="utf-8"
+    encoding="utf-8",
 )
 
+# ── FUNCIONES DE REGISTRO ───────────────────────────────────────
 
-# ── CLASE BASE PARA SERVICIOS ───────────────────────────────────
-
-class ServicioBase:
-    """
-    Clase base auxiliar para representar un servicio del sistema.
-    Permite calcular costos aplicando descuento e impuesto.
-    """
-
-    def __init__(self, costo_base, descuento, impuesto):
-        """
-        Inicializa un servicio validando que los valores recibidos sean correctos.
-        """
-
-        if costo_base <= 0:
-            raise ValueError("El costo base debe ser mayor que cero.")
-
-        if descuento < 0:
-            raise ValueError("El descuento no puede ser negativo.")
-
-        if impuesto < 0:
-            raise ValueError("El impuesto no puede ser negativo.")
-
-        self.costo_base = costo_base
-        self.descuento = descuento
-        self.impuesto = impuesto
-
-    def calcular_costos(self):
-        """
-        Calcula el costo final del servicio aplicando descuento e impuesto.
-        """
-
-        costo_con_descuento = self.costo_base - (self.costo_base * self.descuento / 100)
-        costo_final = costo_con_descuento + (costo_con_descuento * self.impuesto / 100)
-
-        return round(costo_final, 2)
-
-    def mostrar_info(self):
-        """
-        Muestra la información general del servicio.
-        """
-
-        print(f"Tipo de servicio: {self.__class__.__name__}")
-        print(f"Costo base: ${self.costo_base}")
-        print(f"Descuento: {self.descuento}%")
-        print(f"Impuesto: {self.impuesto}%")
-
-
-# ── SERVICIOS ESPECIALIZADOS ────────────────────────────────────
-
-class ReservaSala(ServicioBase):
-    """
-    Clase auxiliar que representa el servicio de reserva de salas.
-    """
-    pass
-
-
-class AlquilerEquipo(ServicioBase):
-    """
-    Clase auxiliar que representa el servicio de alquiler de equipos.
-    """
-    pass
-
-
-class AsesoriaEspecializada(ServicioBase):
-    """
-    Clase auxiliar que representa el servicio de asesoría especializada.
-    """
-    pass
-
-
-# ── ADMINISTRADOR DE SERVICIOS ──────────────────────────────────
-
-class AdminServicios:
-    """
-    Clase auxiliar para registrar y almacenar servicios dentro de una lista.
-    """
-
-    def __init__(self):
-        """
-        Inicializa la lista interna de servicios.
-        """
-
-        self.servicios = []
-
-    def agregar_servicio(self, servicio):
-        """
-        Agrega un servicio a la lista, validando que no sea un valor vacío.
-        """
-
-        if servicio is None:
-            raise ValueError("No se puede agregar un servicio vacío.")
-
-        self.servicios.append(servicio)
-        print("Servicio agregado correctamente.")
-
-
-# Se crea un objeto administrador de servicios para la simulación
-admin_servicios = AdminServicios()
-
-
-# ── CLASE CLIENTE AUXILIAR ──────────────────────────────────────
-
-class Cliente:
-    """
-    Clase auxiliar para representar un cliente dentro de la simulación.
-    """
-
-    def __init__(self, nombre):
-        """
-        Inicializa un cliente validando que el nombre no esté vacío.
-        """
-
-        if nombre is None or nombre.strip() == "":
-            raise ValueError("El nombre del cliente no puede estar vacío.")
-
-        self.nombre = nombre
-
-
-# ── CLASE RESERVA AUXILIAR ──────────────────────────────────────
-
-class Reserva:
-    """
-    Clase auxiliar para representar una reserva del sistema.
-    """
-
-    reservas = []
-
-    def __init__(self, cliente, servicio, duracion):
-        """
-        Inicializa una reserva validando cliente, servicio y duración.
-        """
-
-        if cliente is None:
-            raise ValueError("La reserva debe tener un cliente válido.")
-
-        if servicio is None:
-            raise ValueError("La reserva debe tener un servicio válido.")
-
-        if duracion <= 0:
-            raise ValueError("La duración de la reserva debe ser mayor que cero.")
-
-        self.cliente = cliente
-        self.servicio = servicio
-        self.duracion = duracion
-        self.estado = "Pendiente"
-
-        Reserva.reservas.append(self)
-
-    def confirmar(self):
-        """
-        Confirma una reserva si se encuentra en estado pendiente.
-        """
-
-        if self.estado != "Pendiente":
-            raise ValueError("Solo se pueden confirmar reservas pendientes.")
-
-        self.estado = "Confirmada"
-        print(f"Reserva confirmada para el cliente {self.cliente.nombre}.")
-
-    def procesar(self):
-        """
-        Procesa una reserva si ya fue confirmada.
-        """
-
-        if self.estado != "Confirmada":
-            raise ValueError("La reserva debe estar confirmada para poder procesarse.")
-
-        self.estado = "Procesada"
-        print(f"Reserva procesada para el cliente {self.cliente.nombre}.")
-
-    def cancelar(self):
-        """
-        Cancela una reserva siempre que no haya sido procesada.
-        """
-
-        if self.estado == "Procesada":
-            raise ValueError("No se puede cancelar una reserva ya procesada.")
-
-        self.estado = "Cancelada"
-        print(f"Reserva cancelada para el cliente {self.cliente.nombre}.")
-
-    @classmethod
-    def mostrar_reservas(cls):
-        """
-        Muestra todas las reservas registradas en la simulación.
-        """
-
-        if not cls.reservas:
-            print("No hay reservas registradas.")
-            return
-
-        for reserva in cls.reservas:
-            print(
-                f"Cliente: {reserva.cliente.nombre} | "
-                f"Servicio: {reserva.servicio.__class__.__name__} | "
-                f"Duración: {reserva.duracion} hora(s) | "
-                f"Estado: {reserva.estado}"
-            )
-
-
-# ── FUNCIÓN PARA REGISTRAR ERRORES ──────────────────────────────
 
 def registrar_error(mensaje, error):
-    """
-    Muestra un mensaje de error en consola y lo registra en el archivo logs.txt.
-    """
-
+    """Muestra el error en consola y lo guarda en el archivo de logs."""
     print(mensaje, error)
     logging.error(f"{mensaje} {error}")
 
 
-# ── SIMULACIÓN INTEGRAL DEL SISTEMA ─────────────────────────────
+def registrar_evento(mensaje):
+    """Muestra un evento en consola y lo guarda en el archivo de logs."""
+    print(mensaje)
+    logging.info(mensaje)
 
+
+# ── SIMULACIÓN INTEGRAL DEL SISTEMA ─────────────────────────────
 def simulacion_integral():
     """
-    Ejecuta la simulación integral del sistema.
-
-    En esta función se prueban servicios válidos e inválidos,
-    clientes válidos e inválidos, reservas correctas y reservas fallidas.
-    El objetivo es demostrar que el programa continúa funcionando aunque
-    se presenten errores durante la ejecución.
+    Ejecuta la simulación integral del sistema con las clases oficiales.
+    Demuestra el registro de clientes, servicios y reservas válidas e inválidas,
+    garantizando la estabilidad del programa ante errores.
     """
-
     print("\n" + "=" * 60)
     print("SIMULACIÓN INTEGRAL DEL SISTEMA")
     print("=" * 60)
 
-    servicio1 = None
-    servicio2 = None
-    servicio3 = None
+    # Para manejar IDs de servicios (se usará el repositorio global)
+    servicios_dict = admin_servicios.servicios
 
-    # ── 1. SIMULACIÓN DE SERVICIOS VÁLIDOS ──────────────────────
-
+    # ── 1. REGISTRO DE SERVICIOS VÁLIDOS ────────────────────────
     try:
-        print("\nRegistrando servicios válidos...\n")
+        print("\n>> Registrando servicios válidos...")
+        s1 = ReservaSala(150000, 19, 10, servicios_dict)
+        s2 = AlquilerEquipo(80000, 19, 5, servicios_dict)
+        s3 = AsesoriaEspecializada(250000, 0, 15, servicios_dict)
 
-        servicio1 = ReservaSala(150000, 5, 0)
-        servicio2 = AlquilerEquipo(80000, 10, 5)
-        servicio3 = AsesoriaEspecializada(250000, 0, 15)
+        admin_servicios.agregar_servicio(s1)
+        admin_servicios.agregar_servicio(s2)
+        admin_servicios.agregar_servicio(s3)
 
-        admin_servicios.agregar_servicio(servicio1)
-        admin_servicios.agregar_servicio(servicio2)
-        admin_servicios.agregar_servicio(servicio3)
+        # Eventos reales al log
+        registrar_evento(f"Servicio creado: {s1.mostrar_info()}")
+        registrar_evento(f"Servicio creado: {s2.mostrar_info()}")
+        registrar_evento(f"Servicio creado: {s3.mostrar_info()}")
 
-        servicio1.mostrar_info()
-        print(f"Costo final: ${servicio1.calcular_costos()}\n")
+        print(s1.mostrar_info())
+        print(
+            f"Costo final (IVA+Desc): ${s1.calcular_costo_servicio(iva_ok=True, disc_ok=True)}\n"
+        )
 
-        servicio2.mostrar_info()
-        print(f"Costo final: ${servicio2.calcular_costos()}\n")
+        print(s2.mostrar_info())
+        print(
+            f"Costo final (IVA+Desc): ${s2.calcular_costo_servicio(iva_ok=True, disc_ok=True)}\n"
+        )
 
-        servicio3.mostrar_info()
-        print(f"Costo final: ${servicio3.calcular_costos()}\n")
+        print(s3.mostrar_info())
+        print(
+            f"Costo final (IVA+Desc): ${s3.calcular_costo_servicio(iva_ok=True, disc_ok=True)}\n"
+        )
 
     except Exception as e:
         registrar_error("Error al registrar servicios:", e)
-
     else:
         print("Servicios registrados correctamente.")
-
     finally:
         print("Finalizó la simulación de servicios válidos.")
 
-    # ── 2. SIMULACIÓN DE SERVICIO INVÁLIDO ──────────────────────
-
+    # ── 2. SERVICIO INVÁLIDO (COSTO NEGATIVO) ───────────────────
     try:
-        print("\nProbando servicio inválido...\n")
-
-        servicio_error = ReservaSala(-50000, 5, 0)
-
+        print("\n>> Probando servicio con costo negativo...")
+        s_err = ReservaSala(-50000, 19, 10, servicios_dict)
     except Exception as e:
-        registrar_error("Servicio inválido detectado correctamente:", e)
+        registrar_error("Servicio inválido detectado:", e)
 
-    # ── 3. SIMULACIÓN DE CLIENTES VÁLIDOS ───────────────────────
-
+    # ── 3. CLIENTES VÁLIDOS ─────────────────────────────────────
     try:
-        print("\nRegistrando clientes válidos...\n")
+        print("\n>> Registrando clientes válidos...")
+        c1 = Cliente("1", "Carlos Pérez", "carlos@mail.com", "3001112233")
+        c2 = Cliente("2", "Laura Gómez", "laura@mail.com", "3104445566")
+        Cliente.agregar_cliente(c1)
+        Cliente.agregar_cliente(c2)
 
-        cliente1 = Cliente("Carlos")
-        cliente2 = Cliente("Laura")
+        registrar_evento(f"Cliente registrado: {c1.describir()}")
+        registrar_evento(f"Cliente registrado: {c2.describir()}")
 
-        print(f"Cliente registrado: {cliente1.nombre}")
-        print(f"Cliente registrado: {cliente2.nombre}")
-
+        print(c1.describir())
+        print(c2.describir())
     except Exception as e:
         registrar_error("Error al registrar clientes:", e)
-
     else:
         print("Clientes registrados correctamente.")
-
     finally:
         print("Finalizó la simulación de clientes válidos.")
 
-    # ── 4. SIMULACIÓN DE CLIENTE INVÁLIDO ───────────────────────
-
+    # ── 4. CLIENTE INVÁLIDO (NOMBRE CORTO) ──────────────────────
     try:
-        print("\nProbando cliente inválido...\n")
-
-        cliente_error = Cliente("")
-
+        print("\n>> Probando cliente con nombre inválido...")
+        c_err = Cliente("3", "AB", "mal@mail.com", "1234567")
     except Exception as e:
-        registrar_error("Cliente inválido detectado correctamente:", e)
+        registrar_error("Cliente inválido detectado:", e)
 
-    # ── 5. SIMULACIÓN DE RESERVAS VÁLIDAS ───────────────────────
-
+    # ── 5. RESERVAS VÁLIDAS ─────────────────────────────────────
     try:
-        print("\nCreando reservas válidas...\n")
+        print("\n>> Creando reservas válidas...")
+        # Asegurar clientes registrados previamente
+        c1 = Cliente.buscar_cliente("1")
+        c2 = Cliente.buscar_cliente("2")
 
-        cliente1 = Cliente("Carlos")
-        cliente2 = Cliente("Laura")
+        r1 = Reserva(c1, s1, 2)
+        r2 = Reserva(c2, s2, 1)
 
-        reserva1 = Reserva(cliente1, servicio1, 2)
-        reserva2 = Reserva(cliente2, servicio2, 1)
+        r1.confirmar()
+        r2.confirmar()
+        registrar_evento(f"Reserva confirmada: {r1.describir()}")
+        registrar_evento(f"Reserva confirmada: {r2.describir()}")
 
-        reserva1.confirmar()
-        reserva2.confirmar()
-
-        reserva1.procesar()
-        reserva2.cancelar()
-
+        r1.procesar()
+        r2.cancelar()
+        registrar_evento(f"Reserva procesada: {r1.describir()}")
+        registrar_evento(f"Reserva cancelada: {r2.describir()}")
     except Exception as e:
         registrar_error("Error en reservas:", e)
-
     else:
         print("Reservas procesadas correctamente.")
-
     finally:
         print("Finalizó la simulación de reservas válidas.")
 
-    # ── 6. SIMULACIÓN DE RESERVA INVÁLIDA POR CLIENTE NULO ──────
-
+    # ── 6. RESERVA INVÁLIDA POR CLIENTE NULO ────────────────────
     try:
-        print("\nProbando reserva inválida por cliente nulo...\n")
-
-        reserva_error = Reserva(None, servicio1, 2)
-
+        print("\n>> Probando reserva con cliente nulo...")
+        r_err = Reserva(None, s1, 2)
     except Exception as e:
-        registrar_error("Reserva inválida detectada correctamente:", e)
+        registrar_error("Reserva inválida (cliente nulo):", e)
 
-    # ── 7. SIMULACIÓN DE RESERVA INVÁLIDA POR DURACIÓN ──────────
-
+    # ── 7. RESERVA INVÁLIDA POR DURACIÓN NEGATIVA ───────────────
     try:
-        print("\nProbando reserva inválida por duración negativa...\n")
-
-        reserva_error = Reserva(Cliente("Pedro"), servicio1, -5)
-
+        print("\n>> Probando reserva con duración negativa...")
+        c_temp = Cliente("10", "Pedro Ruiz", "pedro@mail.com", "3009988776")
+        Cliente.agregar_cliente(c_temp)
+        r_err = Reserva(c_temp, s1, -5)
     except Exception as e:
-        registrar_error("Reserva inválida detectada correctamente:", e)
+        registrar_error("Reserva inválida (duración negativa):", e)
 
-    # ── 8. SIMULACIÓN DE RESERVA SIN SERVICIO ───────────────────
-
+    # ── 8. RESERVA INVÁLIDA POR SERVICIO NULO ───────────────────
     try:
-        print("\nProbando reserva inválida por servicio nulo...\n")
-
-        reserva_error = Reserva(Cliente("Ana"), None, 3)
-
+        print("\n>> Probando reserva con servicio nulo...")
+        c_temp2 = Cliente("11", "Ana León", "ana@mail.com", "3116655443")
+        Cliente.agregar_cliente(c_temp2)
+        r_err = Reserva(c_temp2, None, 3)
     except Exception as e:
-        registrar_error("Reserva inválida detectada correctamente:", e)
+        registrar_error("Reserva inválida (servicio nulo):", e)
 
-    # ── 9. SIMULACIÓN DE CANCELACIÓN NO PERMITIDA ───────────────
-
+    # ── 9. CANCELACIÓN NO PERMITIDA (RESERVA YA PROCESADA) ──────
     try:
-        print("\nProbando cancelación de reserva ya procesada...\n")
-
-        cliente3 = Cliente("Miguel")
-        reserva3 = Reserva(cliente3, servicio3, 4)
-
-        reserva3.confirmar()
-        reserva3.procesar()
-        reserva3.cancelar()
-
+        print("\n>> Probando cancelación de reserva ya procesada...")
+        c3 = Cliente("3", "Miguel Torres", "miguel@mail.com", "3204455667")
+        Cliente.agregar_cliente(c3)
+        r3 = Reserva(c3, s3, 4)
+        r3.confirmar()
+        r3.procesar()
+        r3.cancelar()  # Esto debe lanzar EstadoReservaError
     except Exception as e:
-        registrar_error("Operación no permitida detectada correctamente:", e)
+        registrar_error("Cancelación no permitida detectada:", e)
+    finally:
+        print("Finalizó prueba de cancelación inválida.")
 
-    # ── 10. MOSTRAR RESERVAS REGISTRADAS ────────────────────────
-
+    # ── 10. MOSTRAR TODAS LAS RESERVAS ──────────────────────────
     try:
-        print("\nLISTA DE RESERVAS:")
+        print("\n>> Lista final de reservas registradas:")
         Reserva.mostrar_reservas()
-
     except Exception as e:
         registrar_error("Error al mostrar reservas:", e)
 

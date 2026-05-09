@@ -1,4 +1,7 @@
+import logging
 from datetime import datetime
+from .entidades_base import EntidadSistema, Cliente
+from .servicios import Servicio, IDGenerador
 
 # EXCEPCIONES PERSONALIZADAS
 
@@ -15,56 +18,66 @@ class EstadoReservaError(ReservaError):
 # Clase principal de reservas del sistema
 
 
-class Reserva:
+class Reserva(EntidadSistema):
+    # Diccionario que almacena todas las reservas, indexadas por su ID único.
+    # Sirve como repositorio único y para la generación de nuevos IDs.
+    _reservas = {}
 
     # Estados posibles de una reserva
     ESTADO_PENDIENTE = "PENDIENTE"
     ESTADO_CONFIRMADA = "CONFIRMADA"
     ESTADO_CANCELADA = "CANCELADA"
-
-    # Lista global de reservas registradas
-    lista_reservas = []
+    ESTADO_PROCESADA = "PROCESADA"
 
     def __init__(self, cliente, servicio, duracion):
         """
         Constructor de la clase Reserva
         """
+        # Generar ID único para la reserva
+        id_reserva = IDGenerador.crear_id("R", Reserva._reservas)
+        # Llamar al constructor de la clase base
+        super().__init__(id_reserva)
+        # Registrar la reserva en el diccionario central desde su creación
+        Reserva._reservas[id_reserva] = self
+
         # Datos principales de la reserva
         self.cliente = cliente
         self.servicio = servicio
         self.duracion = duracion
         # Estado inicial de la reserva
         self.estado = Reserva.ESTADO_PENDIENTE
-        # Fecha de creacion
+        # Fecha de creación
         self.fecha = datetime.now()
 
-        # Validacion inicial de datos
-
+        # Validación inicial de datos
         self.validar()
 
-    # Validacion de datos de entrada
+    # Validación de datos de entrada
 
-    def validar(self):
+    def validar(self) -> bool:
         """
-        Valida los datos de la reserva
+        Valida los datos de la reserva.
+        Retorna True si es válida, lanza excepción en caso contrario.
         """
+        # Validar que cliente sea una instancia de Cliente
+        if not isinstance(self.cliente, Cliente):
+            raise ReservaError(
+                "El cliente no es una instancia válida de Cliente")
 
-        # Validar cliente valido
-        if self.cliente is None:
-            raise ReservaError("Cliente inválido")
+        # Validar que servicio sea una instancia de Servicio
+        if not isinstance(self.servicio, Servicio):
+            raise ReservaError(
+                "El servicio no es una instancia válida de Servicio")
 
-        # Validar servicio valido
-        if self.servicio is None:
-            raise ReservaError("Servicio inválido")
-
-        # Validar duración numerica
+        # Validar duración numérica
         if not isinstance(self.duracion, (int, float)):
             raise ReservaError("La duración debe ser numérica")
 
-        # Verifica duracion positiva
-
+        # Verifica duración positiva
         if self.duracion <= 0:
             raise ReservaError("La duración debe ser mayor a 0")
+
+        return True
 
     # CONFIRMAR RESERVA
     # try / except / else
@@ -72,75 +85,63 @@ class Reserva:
         """
         Confirma la reserva y calcula el costo
         """
-
         try:
-
             if self.estado != Reserva.ESTADO_PENDIENTE:
                 raise EstadoReservaError(
                     "Solo reservas pendientes pueden confirmarse"
                 )
 
-            # Calcular costo usando el servicio
-            costo = self.servicio.calcular_costo(self.duracion)
+            # Calcular costo usando el servicio (aplica IVA y descuento por defecto)
+            costo_unitario = self.servicio.calcular_costo_servicio(
+                iva_ok=True, disc_ok=True)
+            costo = costo_unitario * self.duracion
 
         except Exception as e:
-
-            self.log_error("Error al confirmar reserva", e)
-
+            logging.error(f"Error al confirmar reserva: {e}")
             # Encadenamiento de excepciones
             raise ReservaError(
                 "Falló la confirmación de la reserva"
             ) from e
 
         else:
-
             self.estado = Reserva.ESTADO_CONFIRMADA
-
-            Reserva.lista_reservas.append(self)
-
             print(f"Reserva confirmada correctamente")
             print(f"Costo total: ${costo}")
 
     # CANCELAR RESERVA
     # try / except / finally
-
     def cancelar(self):
         """
         Cancela la reserva
         """
-
         try:
-
             if self.estado == Reserva.ESTADO_CANCELADA:
                 raise EstadoReservaError(
                     "La reserva ya está cancelada"
                 )
+            if self.estado == Reserva.ESTADO_PROCESADA:
+                raise EstadoReservaError(
+                    "No se puede cancelar una reserva ya procesada"
+                )
 
             self.estado = Reserva.ESTADO_CANCELADA
-
             print("Reserva cancelada correctamente")
 
         except Exception as e:
-
-            self.log_error("Error al cancelar reserva", e)
-
+            logging.error(f"Error al cancelar reserva: {e}")
             raise ReservaError(
                 "Falló la cancelación de la reserva"
             ) from e
 
         finally:
-
             print("Proceso de cancelación finalizado")
 
     # PROCESAR RESERVA
-
     def procesar(self):
         """
         Procesa la reserva confirmada
         """
-
         try:
-
             if self.estado != Reserva.ESTADO_CONFIRMADA:
                 raise EstadoReservaError(
                     "Solo reservas confirmadas pueden procesarse"
@@ -148,27 +149,13 @@ class Reserva:
 
             print("Procesando reserva...")
             print("Servicio ejecutado correctamente")
+            self.estado = Reserva.ESTADO_PROCESADA
 
         except Exception as e:
-
-            self.log_error("Error al procesar reserva", e)
-
+            logging.error(f"Error al procesar reserva: {e}")
             raise ReservaError(
                 "Error durante el procesamiento"
             ) from e
-    # LOGS
-
-    def log_error(self, mensaje, error):
-        """
-        Guarda errores en archivo logs.txt
-        """
-
-        with open("logs.txt", "a", encoding="utf-8") as archivo:
-
-            archivo.write(
-                f"{datetime.now()} | ERROR | "
-                f"{mensaje}: {str(error)}\n"
-            )
 
     # MOSTRAR RESERVAS
 
@@ -177,15 +164,11 @@ class Reserva:
         """
         Muestra todas las reservas registradas
         """
-
         print("\n===== LISTA DE RESERVAS =====")
-
-        if not cls.lista_reservas:
+        if not cls._reservas:
             print("No hay reservas registradas")
             return
-
-        for reserva in cls.lista_reservas:
-
+        for reserva in cls._reservas.values():
             print(
                 f"Cliente: {reserva.cliente.nombre} | "
                 f"Estado: {reserva.estado} | "
@@ -194,13 +177,24 @@ class Reserva:
             )
 
     # REPRESENTACIÓN EN TEXTO
-
     def __str__(self):
-
         return (
             f"Reserva("
             f"cliente={self.cliente.nombre}, "
             f"estado={self.estado}, "
             f"duracion={self.duracion}"
             f")"
+        )
+
+    def describir(self) -> str:
+        """
+        Retorna una descripción detallada de la reserva.
+        """
+        return (
+            f"Reserva {self.id_entidad}:\n"
+            f"  Cliente:  {self.cliente.nombre}\n"
+            f"  Servicio: {self.servicio.mostrar_info()}\n"
+            f"  Estado:   {self.estado}\n"
+            f"  Duración: {self.duracion} horas\n"
+            f"  Fecha:    {self.fecha}"
         )

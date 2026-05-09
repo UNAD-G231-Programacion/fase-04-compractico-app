@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from .entidades_base import EntidadSistema
+from .calculos import CalculadoraCostos, ErrorCalculo
 import re
 
 # -----------------------------------------------------------------------
@@ -12,6 +14,11 @@ class ServicioError(Exception):
     def __init__(self, mensaje, valor_recibido=None):
         super().__init__(mensaje)
         self.valor_recibido = valor_recibido
+
+
+class ServicioNoDisponibleError(ServicioError):
+    """Se lanza cuando se intenta acceder a un servicio que no existe."""
+    pass
 
 
 class ServicioNombreInvalidoError(ServicioError):
@@ -68,6 +75,13 @@ class AdminServicios:
 
         self._servicios[id_servicio] = nuevo_servicio
         return True
+
+    def obtener_servicio(self, id_servicio: str) -> "Servicio":
+        """Busca un servicio por ID y lanza excepción si no existe."""
+        if id_servicio not in self._servicios:
+            raise ServicioNoDisponibleError(
+                f"Servicio con ID {id_servicio} no encontrado.")
+        return self._servicios[id_servicio]
 
 
 # Instancia de servicios
@@ -172,12 +186,15 @@ class Entrada:
 # -----------------------------------------------------------------------
 # Servicio: clase abstracta base para todos los servicios del sistema.
 # -----------------------------------------------------------------------
-class Servicio(ABC):
+class Servicio(EntidadSistema, ABC):
     """Clase abstracta base para los servicios de Software FJ."""
 
     def __init__(self, nombre: str, costo: float, iva: float, descuento: float, base_datos: dict) -> None:
         # El ID se genera automáticamente usando la letra "S" y el repositorio actual
-        self.__id_servicio = IDGenerador.crear_id("S", base_datos)
+        id_generado = IDGenerador.crear_id('S', base_datos)
+        super().__init__(id_generado)
+
+        self.__id_servicio = id_generado
 
         # Usamos los setters directamente para que la validación ocurra al crear el objeto
         self.nombre_servicio = nombre
@@ -240,26 +257,39 @@ class Servicio(ABC):
             raise ServicioDescuentoInvalidoError(
                 "La tasa de descuento no es válida.", valor_recibido=valor) from e
 
+    def validar(self) -> bool:
+        """Valida que el servicio tenga datos consistentes. Retorna True si es válido."""
+        # Las validaciones se realizan en los setters, aquí se verifica integridad
+        return self.costo_servicio >= 0
+
+    def describir(self) -> str:
+        """Descripción genérica que cumple el contrato de EntidadSistema."""
+        return self.mostrar_info()
+
     def calcular_costo_servicio(self, iva_ok: bool = False, disc_ok: bool = False) -> float:
         """
-        Calcula el costo final del servicio.
+        Calcula el costo final del servicio usando el módulo de cálculos.
 
-        iva_ok  -> si es True, suma el IVA al costo base.
-        disc_ok -> si es True, aplica el descuento sobre el precio (después del IVA).
+        - iva_ok: si es True, se incluye el IVA.
+        - disc_ok: si es True, se aplica el descuento.
 
-        Ejemplo con costo=100, iva=19%, desc=10%:
-        calcular_costo_servicio(iva_ok=True, disc_ok=True) -> 107.10
+        Delega en CalculadoraCostos para mantener una única fuente de verdad.
         """
-        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioCostoInvalidoError si costo <= 0
         costo = self.costo_servicio
 
-        if iva_ok:
-            costo += costo * self.valor_iva
-
-        if disc_ok:
-            costo -= costo * self.valor_desc
-
-        return costo
+        try:
+            if iva_ok and disc_ok:
+                return CalculadoraCostos.costo_combinado(costo, self.valor_iva, self.valor_desc)
+            if iva_ok:
+                return CalculadoraCostos.costo_con_impuesto(costo, self.valor_iva)
+            if disc_ok:
+                return CalculadoraCostos.costo_con_descuento(costo, self.valor_desc)
+            return CalculadoraCostos.costo_base(costo)
+        except ErrorCalculo as e:
+            raise ServicioCostoInvalidoError(
+                f"Error al calcular costo del servicio {self.id_servicio}: {e}",
+                valor_recibido=costo
+            ) from e
 
     @abstractmethod
     def mostrar_info(self) -> str:
@@ -363,10 +393,3 @@ class AsesoriaEspecializada(Servicio):
             f"  IVA:        {self.valor_iva * 100:.1f}%\n"
             f"  Descuento:  {self.valor_desc * 100:.1f}%"
         )
-
-
-# === PRUEBAS excepciones ===
-if __name__ == "__main__":
-    mi_servicio = AsesoriaEspecializada(12000, 30, 12)
-    print(mi_servicio.mostrar_info())
-    mi_servicio.costo_servicio = "ABDFTEJSLK"
