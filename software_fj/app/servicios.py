@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-import re
-
-# Imports modulos externos
 from entidades_base import EntidadSistema
+from calculos import CalculadoraCostos, ErrorCalculo
+import re
 
 # -----------------------------------------------------------------------
 # EXCEPCIONES MODULO SERVICIOS: Excepciones personalizadas para servicios.
@@ -269,24 +268,28 @@ class Servicio(EntidadSistema, ABC):
 
     def calcular_costo_servicio(self, iva_ok: bool = False, disc_ok: bool = False) -> float:
         """
-        Calcula el costo final del servicio.
+        Calcula el costo final del servicio usando el módulo de cálculos.
 
-        iva_ok  -> si es True, suma el IVA al costo base.
-        disc_ok -> si es True, aplica el descuento sobre el precio (después del IVA).
+        - iva_ok: si es True, se incluye el IVA.
+        - disc_ok: si es True, se aplica el descuento.
 
-        Ejemplo con costo=100, iva=19%, desc=10%:
-        calcular_costo_servicio(iva_ok=True, disc_ok=True) -> 107.10
+        Delega en CalculadoraCostos para mantener una única fuente de verdad.
         """
-        # EXCEPCIÓN PERSONALIZADA: aquí iría ServicioCostoInvalidoError si costo <= 0
         costo = self.costo_servicio
 
-        if iva_ok:
-            costo += costo * self.valor_iva
-
-        if disc_ok:
-            costo -= costo * self.valor_desc
-
-        return costo
+        try:
+            if iva_ok and disc_ok:
+                return CalculadoraCostos.costo_combinado(costo, self.valor_iva, self.valor_desc)
+            if iva_ok:
+                return CalculadoraCostos.costo_con_impuesto(costo, self.valor_iva)
+            if disc_ok:
+                return CalculadoraCostos.costo_con_descuento(costo, self.valor_desc)
+            return CalculadoraCostos.costo_base(costo)
+        except ErrorCalculo as e:
+            raise ServicioCostoInvalidoError(
+                f"Error al calcular costo del servicio {self.id_servicio}: {e}",
+                valor_recibido=costo
+            ) from e
 
     @abstractmethod
     def mostrar_info(self) -> str:
@@ -390,10 +393,3 @@ class AsesoriaEspecializada(Servicio):
             f"  IVA:        {self.valor_iva * 100:.1f}%\n"
             f"  Descuento:  {self.valor_desc * 100:.1f}%"
         )
-
-
-# === PRUEBAS excepciones ===
-if __name__ == "__main__":
-    mi_servicio = AsesoriaEspecializada(12000, 30, 12)
-    print(mi_servicio.mostrar_info())
-    mi_servicio.costo_servicio = "ABDFTEJSLK"
