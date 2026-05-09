@@ -18,14 +18,8 @@ import os
 
 # Importación de las clases oficiales del sistema
 from entidades_base import Cliente
-from servicios import (
-    Servicio,
-    AdminServicios,
-    admin_servicios,
-    ReservaSala,
-    AlquilerEquipo,
-    AsesoriaEspecializada
-)
+from servicios import (Servicio, AdminServicios, admin_servicios,
+                       ReservaSala, AlquilerEquipo, AsesoriaEspecializada)
 from calculos import CalculadoraCostos, ErrorCalculo
 from reservas import Reserva, ReservaError, EstadoReservaError
 
@@ -162,6 +156,7 @@ def simulacion_integral():
     try:
         registrar_evento("\n>> Probando reserva con duración negativa...")
         c_temp = Cliente("10", "Pedro Ruiz", "pedro@mail.com", "3009988776")
+        Cliente.agregar_cliente(c_temp)
         r_err = Reserva(c_temp, s1, -5)
     except Exception as e:
         registrar_error("Reserva inválida (duración negativa):", e)
@@ -170,6 +165,7 @@ def simulacion_integral():
     try:
         registrar_evento("\n>> Probando reserva con servicio nulo...")
         c_temp2 = Cliente("11", "Ana León", "ana@mail.com", "3116655443")
+        Cliente.agregar_cliente(c_temp2)
         r_err = Reserva(c_temp2, None, 3)
     except Exception as e:
         registrar_error("Reserva inválida (servicio nulo):", e)
@@ -179,6 +175,7 @@ def simulacion_integral():
         registrar_evento(
             "\n>> Probando cancelación de reserva ya procesada...")
         c3 = Cliente("3", "Miguel Torres", "miguel@mail.com", "3204455667")
+        Cliente.agregar_cliente(c3)
         r3 = Reserva(c3, s3, 4)
         r3.confirmar()
         r3.procesar()

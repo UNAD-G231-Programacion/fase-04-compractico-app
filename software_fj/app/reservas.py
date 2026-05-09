@@ -1,7 +1,7 @@
+import logging
 from datetime import datetime
 from entidades_base import EntidadSistema, Cliente
 from servicios import Servicio, IDGenerador
-import logging
 
 # EXCEPCIONES PERSONALIZADAS
 
@@ -19,13 +19,15 @@ class EstadoReservaError(ReservaError):
 
 
 class Reserva(EntidadSistema):
-    # Diccionario para generar IDs únicos (compatible con IDGenerador)
+    # Diccionario que almacena todas las reservas, indexadas por su ID único.
+    # Sirve como repositorio único y para la generación de nuevos IDs.
     _reservas = {}
 
     # Estados posibles de una reserva
     ESTADO_PENDIENTE = "PENDIENTE"
     ESTADO_CONFIRMADA = "CONFIRMADA"
     ESTADO_CANCELADA = "CANCELADA"
+    ESTADO_PROCESADA = "PROCESADA"
 
     def __init__(self, cliente, servicio, duracion):
         """
@@ -44,13 +46,13 @@ class Reserva(EntidadSistema):
         self.duracion = duracion
         # Estado inicial de la reserva
         self.estado = Reserva.ESTADO_PENDIENTE
-        # Fecha de creacion
+        # Fecha de creación
         self.fecha = datetime.now()
 
-        # Validacion inicial de datos
+        # Validación inicial de datos
         self.validar()
 
-    # Validacion de datos de entrada
+    # Validación de datos de entrada
 
     def validar(self) -> bool:
         """
@@ -67,11 +69,11 @@ class Reserva(EntidadSistema):
             raise ReservaError(
                 "El servicio no es una instancia válida de Servicio")
 
-        # Validar duración numerica
+        # Validar duración numérica
         if not isinstance(self.duracion, (int, float)):
             raise ReservaError("La duración debe ser numérica")
 
-        # Verifica duracion positiva
+        # Verifica duración positiva
         if self.duracion <= 0:
             raise ReservaError("La duración debe ser mayor a 0")
 
@@ -83,77 +85,63 @@ class Reserva(EntidadSistema):
         """
         Confirma la reserva y calcula el costo
         """
-
         try:
-
             if self.estado != Reserva.ESTADO_PENDIENTE:
                 raise EstadoReservaError(
                     "Solo reservas pendientes pueden confirmarse"
                 )
 
-            # Calcular costo usando el servicio
+            # Calcular costo usando el servicio (aplica IVA y descuento por defecto)
             costo_unitario = self.servicio.calcular_costo_servicio(
                 iva_ok=True, disc_ok=True)
-
             costo = costo_unitario * self.duracion
 
         except Exception as e:
-
             logging.error(f"Error al confirmar reserva: {e}")
-
             # Encadenamiento de excepciones
             raise ReservaError(
                 "Falló la confirmación de la reserva"
             ) from e
 
         else:
-
             self.estado = Reserva.ESTADO_CONFIRMADA
-            # La reserva ya está en _reservas desde su creación
-
             print(f"Reserva confirmada correctamente")
             print(f"Costo total: ${costo}")
 
     # CANCELAR RESERVA
     # try / except / finally
-
     def cancelar(self):
         """
         Cancela la reserva
         """
-
         try:
-
             if self.estado == Reserva.ESTADO_CANCELADA:
                 raise EstadoReservaError(
                     "La reserva ya está cancelada"
                 )
+            if self.estado == Reserva.ESTADO_PROCESADA:
+                raise EstadoReservaError(
+                    "No se puede cancelar una reserva ya procesada"
+                )
 
             self.estado = Reserva.ESTADO_CANCELADA
-
             print("Reserva cancelada correctamente")
 
         except Exception as e:
-
             logging.error(f"Error al cancelar reserva: {e}")
-
             raise ReservaError(
                 "Falló la cancelación de la reserva"
             ) from e
 
         finally:
-
             print("Proceso de cancelación finalizado")
 
     # PROCESAR RESERVA
-
     def procesar(self):
         """
         Procesa la reserva confirmada
         """
-
         try:
-
             if self.estado != Reserva.ESTADO_CONFIRMADA:
                 raise EstadoReservaError(
                     "Solo reservas confirmadas pueden procesarse"
@@ -161,11 +149,10 @@ class Reserva(EntidadSistema):
 
             print("Procesando reserva...")
             print("Servicio ejecutado correctamente")
+            self.estado = Reserva.ESTADO_PROCESADA
 
         except Exception as e:
-
             logging.error(f"Error al procesar reserva: {e}")
-
             raise ReservaError(
                 "Error durante el procesamiento"
             ) from e
@@ -190,9 +177,7 @@ class Reserva(EntidadSistema):
             )
 
     # REPRESENTACIÓN EN TEXTO
-
     def __str__(self):
-
         return (
             f"Reserva("
             f"cliente={self.cliente.nombre}, "
