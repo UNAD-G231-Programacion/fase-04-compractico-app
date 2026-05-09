@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 import re
 
+# Imports modulos externos
+from entidades_base import EntidadSistema
+
 # -----------------------------------------------------------------------
 # EXCEPCIONES MODULO SERVICIOS: Excepciones personalizadas para servicios.
 # -----------------------------------------------------------------------
@@ -12,6 +15,11 @@ class ServicioError(Exception):
     def __init__(self, mensaje, valor_recibido=None):
         super().__init__(mensaje)
         self.valor_recibido = valor_recibido
+
+
+class ServicioNoDisponibleError(ServicioError):
+    """Se lanza cuando se intenta acceder a un servicio que no existe."""
+    pass
 
 
 class ServicioNombreInvalidoError(ServicioError):
@@ -68,6 +76,13 @@ class AdminServicios:
 
         self._servicios[id_servicio] = nuevo_servicio
         return True
+
+    def obtener_servicio(self, id_servicio: str) -> "Servicio":
+        """Busca un servicio por ID y lanza excepción si no existe."""
+        if id_servicio not in self._servicios:
+            raise ServicioNoDisponibleError(
+                f"Servicio con ID {id_servicio} no encontrado.")
+        return self._servicios[id_servicio]
 
 
 # Instancia de servicios
@@ -172,12 +187,15 @@ class Entrada:
 # -----------------------------------------------------------------------
 # Servicio: clase abstracta base para todos los servicios del sistema.
 # -----------------------------------------------------------------------
-class Servicio(ABC):
+class Servicio(EntidadSistema, ABC):
     """Clase abstracta base para los servicios de Software FJ."""
 
     def __init__(self, nombre: str, costo: float, iva: float, descuento: float, base_datos: dict) -> None:
         # El ID se genera automáticamente usando la letra "S" y el repositorio actual
-        self.__id_servicio = IDGenerador.crear_id("S", base_datos)
+        id_generado = IDGenerador.crear_id('S', base_datos)
+        super().__init__(id_generado)
+
+        self.__id_servicio = id_generado
 
         # Usamos los setters directamente para que la validación ocurra al crear el objeto
         self.nombre_servicio = nombre
@@ -239,6 +257,15 @@ class Servicio(ABC):
         except ValueError as e:
             raise ServicioDescuentoInvalidoError(
                 "La tasa de descuento no es válida.", valor_recibido=valor) from e
+
+    def validar(self) -> bool:
+        """Valida que el servicio tenga datos consistentes. Retorna True si es válido."""
+        # Las validaciones se realizan en los setters, aquí se verifica integridad
+        return self.costo_servicio >= 0
+
+    def describir(self) -> str:
+        """Descripción genérica que cumple el contrato de EntidadSistema."""
+        return self.mostrar_info()
 
     def calcular_costo_servicio(self, iva_ok: bool = False, disc_ok: bool = False) -> float:
         """
