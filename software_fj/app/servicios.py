@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from entidades_base import EntidadSistema
-from calculos import CalculadoraCostos, ErrorCalculo
+from .entidades_base import EntidadSistema
+from .calculos import CalculadoraCostos, ErrorCalculo
 import re
 
 # -----------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
-from entidades_base import EntidadSistema, Cliente
-from servicios import Servicio, IDGenerador
+from .entidades_base import EntidadSistema, Cliente
+from .servicios import Servicio, IDGenerador
 
 # EXCEPCIONES PERSONALIZADAS
 

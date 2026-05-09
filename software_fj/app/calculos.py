@@ -45,15 +45,15 @@ class CalculadoraCostos:
         Retorna el costo sumándole el impuesto.
         Parámetros:
             costo (float): Costo base > 0.
-            tasa_impuesto (float): Tasa en tanto por uno (0 < tasa <= 1).
+            tasa_impuesto (float): Tasa en tanto por uno (0 <= tasa <= 1).
         Lanza:
             ErrorCalculo si los parámetros son inválidos.
         """
         if costo <= 0:
             raise ErrorCalculo("El costo base debe ser mayor que cero.")
-        if not (0 < tasa_impuesto <= 1):
+        if not (0 <= tasa_impuesto <= 1):
             raise ErrorCalculo(
-                "La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
+                "La tasa de impuesto debe estar entre 0 y 1.")
         return round(costo + costo * tasa_impuesto, 2)
 
     @staticmethod
@@ -83,16 +83,16 @@ class CalculadoraCostos:
         Aplica primero el descuento y luego el impuesto sobre el costo base.
         Parámetros:
             costo (float): Costo base > 0.
-            tasa_impuesto (float): 0 < tasa <= 1.
+            tasa_impuesto (float): 0 <= tasa <= 1.
             tasa_descuento (float): 0 < tasa <= 1.
         Lanza:
             ErrorCalculo si parámetros inválidos o resultado negativo.
         """
         if costo <= 0:
             raise ErrorCalculo("El costo base debe ser mayor que cero.")
-        if not (0 < tasa_impuesto <= 1):
+        if not (0 <= tasa_impuesto <= 1):
             raise ErrorCalculo(
-                "La tasa de impuesto debe estar entre 0 y 1 (excluyendo 0).")
+                "La tasa de impuesto debe estar entre 0 y 1.")
         if not (0 < tasa_descuento <= 1):
             raise ErrorCalculo(
                 "La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
