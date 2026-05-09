@@ -1,7 +1,6 @@
 # app/interfaz.py
 """
 Interfaz gráfica básica para Software FJ.
-Conectada a la lógica de negocio sin modificar los módulos base.
 """
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext, filedialog
@@ -43,12 +42,14 @@ class WidgetLogHandler(logging.Handler):
 
 
 class InterfazSistema:
+    """Clase Interfaz de la app"""
+
     def __init__(self, root):
         self.root = root
         self.root.title("Software FJ - Gestión")
         self.root.geometry("800x550")
 
-        # Notebook (pestañas)
+        # Notebook (pestañas): Funcion de pestanas en la interfaz tkinter
         self.notebook = ttk.Notebook(root)
         self.notebook.pack(fill="both", expand=True, padx=5, pady=5)
 
@@ -105,7 +106,7 @@ class InterfazSistema:
         ttk.Button(frame, text="Agregar Cliente", command=self.agregar_cliente).grid(
             row=4, column=0, columnspan=2, pady=5)
 
-        # Búsqueda rápida
+        # Label de busqueda
         ttk.Label(pestana, text="Buscar:").pack(
             anchor="w", padx=5, pady=(5, 0))
         self.busqueda_cliente = ttk.Entry(pestana, width=30)
@@ -527,6 +528,7 @@ class InterfazSistema:
         self.texto_logs.see(tk.END)
 
     def limpiar_logs_window(self):
+        # limpia la ventana de logs
         self.texto_logs.delete("1.0", tk.END)
         logging.info("Ventana de logs limpiada.")
 
