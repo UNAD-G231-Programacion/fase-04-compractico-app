@@ -1,6 +1,7 @@
 from datetime import datetime
 from entidades_base import EntidadSistema, Cliente
 from servicios import Servicio, IDGenerador
+import logging
 
 # EXCEPCIONES PERSONALIZADAS
 
@@ -98,7 +99,7 @@ class Reserva(EntidadSistema):
 
         except Exception as e:
 
-            self.log_error("Error al confirmar reserva", e)
+            logging.error(f"Error al confirmar reserva: {e}")
 
             # Encadenamiento de excepciones
             raise ReservaError(
@@ -134,7 +135,7 @@ class Reserva(EntidadSistema):
 
         except Exception as e:
 
-            self.log_error("Error al cancelar reserva", e)
+            logging.error(f"Error al cancelar reserva: {e}")
 
             raise ReservaError(
                 "Falló la cancelación de la reserva"
@@ -163,24 +164,11 @@ class Reserva(EntidadSistema):
 
         except Exception as e:
 
-            self.log_error("Error al procesar reserva", e)
+            logging.error(f"Error al procesar reserva: {e}")
 
             raise ReservaError(
                 "Error durante el procesamiento"
             ) from e
-    # LOGS
-
-    def log_error(self, mensaje, error):
-        """
-        Guarda errores en archivo logs.txt
-        """
-
-        with open("logs.txt", "a", encoding="utf-8") as archivo:
-
-            archivo.write(
-                f"{datetime.now()} | ERROR | "
-                f"{mensaje}: {str(error)}\n"
-            )
 
     # MOSTRAR RESERVAS
 
