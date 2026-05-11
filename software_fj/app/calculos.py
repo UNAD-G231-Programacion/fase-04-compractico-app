@@ -1,6 +1,8 @@
 """
 MÓDULO 3 - CÁLCULO DE COSTOS (Software FJ)
 ===========================================
+Autor: Sebastian Victoria Gonzales
+
 Implementa los métodos de cálculo de costo en sus cuatro variantes:
   - Costo base
   - Costo con impuestos

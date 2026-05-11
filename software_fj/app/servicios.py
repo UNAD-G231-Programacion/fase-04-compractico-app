@@ -1,3 +1,6 @@
+# MODULO 2: CLASE SERVICIOS Y SERVICIOS ESPECIALIZADOS
+# Autor: Everson Daniel Cumbalaza Benavides
+
 from abc import ABC, abstractmethod
 from .entidades_base import EntidadSistema
 from .calculos import CalculadoraCostos, ErrorCalculo

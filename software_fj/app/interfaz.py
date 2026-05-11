@@ -1,6 +1,7 @@
 # app/interfaz.py
 """
-Interfaz gráfica básica para Software FJ.
+Interfaz gráfica básica para el sistema Software FJ.
+Autor: Everson Daniel Cumbalaza Benavides
 """
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext, filedialog
@@ -60,7 +61,7 @@ class InterfazSistema:
         self.crear_pestana_simulacion()
         self.crear_pestana_logs()
 
-        # Configurar logs en vivo
+        # Configurar logs en ejecucion
         self.configurar_log_handler()
         logging.info("Aplicación iniciada.")
 
