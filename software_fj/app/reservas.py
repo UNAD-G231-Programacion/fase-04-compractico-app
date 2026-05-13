@@ -37,8 +37,6 @@ class Reserva(EntidadSistema):
         id_reserva = IDGenerador.crear_id("R", Reserva._reservas)
         # Llamar al constructor de la clase base
         super().__init__(id_reserva)
-        # Registrar la reserva en el diccionario central desde su creación
-        Reserva._reservas[id_reserva] = self
 
         # Datos principales de la reserva
         self.cliente = cliente
@@ -49,8 +47,11 @@ class Reserva(EntidadSistema):
         # Fecha de creación
         self.fecha = datetime.now()
 
-        # Validación inicial de datos
+        # Validación inicial de datos ANTES de registrar
         self.validar()
+
+        # Registrar la reserva en el diccionario central solo después de validación exitosa
+        Reserva._reservas[id_reserva] = self
 
     # Validación de datos de entrada
 
@@ -169,8 +170,10 @@ class Reserva(EntidadSistema):
             print("No hay reservas registradas")
             return
         for reserva in cls._reservas.values():
+            # Protección que validar que cliente exista
+            nombre_cliente = reserva.cliente.nombre if reserva.cliente else "CLIENTE INVÁLIDO"
             print(
-                f"Cliente: {reserva.cliente.nombre} | "
+                f"Cliente: {nombre_cliente} | "
                 f"Estado: {reserva.estado} | "
                 f"Duración: {reserva.duracion} horas | "
                 f"Fecha: {reserva.fecha}"
@@ -178,9 +181,11 @@ class Reserva(EntidadSistema):
 
     # REPRESENTACIÓN EN TEXTO
     def __str__(self):
+        # Protección que validar que cliente exista
+        nombre_cliente = self.cliente.nombre if self.cliente else "CLIENTE INVÁLIDO"
         return (
             f"Reserva("
-            f"cliente={self.cliente.nombre}, "
+            f"cliente={nombre_cliente}, "
             f"estado={self.estado}, "
             f"duracion={self.duracion}"
             f")"
@@ -190,10 +195,14 @@ class Reserva(EntidadSistema):
         """
         Retorna una descripción detallada de la reserva.
         """
+        # Protección validar que cliente y servicio existan
+        nombre_cliente = self.cliente.nombre if self.cliente else "CLIENTE INVÁLIDO"
+        info_servicio = self.servicio.mostrar_info(
+        ) if self.servicio else "SERVICIO INVÁLIDO"
         return (
             f"Reserva {self.id_entidad}:\n"
-            f"  Cliente:  {self.cliente.nombre}\n"
-            f"  Servicio: {self.servicio.mostrar_info()}\n"
+            f"  Cliente:  {nombre_cliente}\n"
+            f"  Servicio: {info_servicio}\n"
             f"  Estado:   {self.estado}\n"
             f"  Duración: {self.duracion} horas\n"
             f"  Fecha:    {self.fecha}"

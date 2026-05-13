@@ -498,6 +498,11 @@ class InterfazSistema:
         for item in self.tree_reservas.get_children():
             self.tree_reservas.delete(item)
         for r in Reserva._reservas.values():
+            # Protección defensiva: validar que cliente y servicio existan
+            if r.cliente is None or r.servicio is None:
+                logging.warning(
+                    f"Reserva {r.id_entidad} tiene datos incompletos (cliente o servicio None)")
+                continue
             costo_str = "N/A"
             if r.estado in (Reserva.ESTADO_CONFIRMADA, Reserva.ESTADO_PROCESADA):
                 unitario = r.servicio.calcular_costo_servicio(
