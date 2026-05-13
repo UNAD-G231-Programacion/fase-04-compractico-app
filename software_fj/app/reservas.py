@@ -81,82 +81,86 @@ class Reserva(EntidadSistema):
         return True
 
     # CONFIRMAR RESERVA
-    # try / except / else
     def confirmar(self):
         """
         Confirma la reserva y calcula el costo
         """
-        try:
-            if self.estado != Reserva.ESTADO_PENDIENTE:
-                raise EstadoReservaError(
-                    "Solo reservas pendientes pueden confirmarse"
-                )
+        # Validar que solo se puedan confirmar reservas pendientes
+        if self.estado != Reserva.ESTADO_PENDIENTE:
+            raise EstadoReservaError(
+                "Solo reservas pendientes pueden confirmarse"
+            )
 
+        try:
             # Calcular costo usando el servicio (aplica IVA y descuento por defecto)
             costo_unitario = self.servicio.calcular_costo_servicio(
                 iva_ok=True, disc_ok=True)
             costo = costo_unitario * self.duracion
 
         except Exception as e:
-            logging.error(f"Error al confirmar reserva: {e}")
-            # Encadenamiento de excepciones
+            logging.error(
+                f"Error al calcular costo de reserva {self.id_entidad}: {e}")
             raise ReservaError(
-                "Falló la confirmación de la reserva"
+                "No se pudo calcular el costo de la reserva"
             ) from e
 
-        else:
-            self.estado = Reserva.ESTADO_CONFIRMADA
-            print(f"Reserva confirmada correctamente")
-            print(f"Costo total: ${costo}")
+        # Cambiar estado a confirmada (solo si cálculo fue exitoso)
+        self.estado = Reserva.ESTADO_CONFIRMADA
+        logging.info(
+            f"Reserva {self.id_entidad} confirmada. Costo total: ${costo:.2f}")
 
     # CANCELAR RESERVA
-    # try / except / finally
     def cancelar(self):
         """
         Cancela la reserva
         """
-        try:
-            if self.estado == Reserva.ESTADO_CANCELADA:
-                raise EstadoReservaError(
-                    "La reserva ya está cancelada"
-                )
-            if self.estado == Reserva.ESTADO_PROCESADA:
-                raise EstadoReservaError(
-                    "No se puede cancelar una reserva ya procesada"
-                )
+        # Validaciones previas
+        if self.estado == Reserva.ESTADO_CANCELADA:
+            raise EstadoReservaError(
+                "La reserva ya está cancelada"
+            )
+        if self.estado == Reserva.ESTADO_PROCESADA:
+            raise EstadoReservaError(
+                "No se puede cancelar una reserva ya procesada"
+            )
 
+        try:
+            # Cambiar estado a cancelada
             self.estado = Reserva.ESTADO_CANCELADA
-            print("Reserva cancelada correctamente")
+            logging.info(f"Reserva {self.id_entidad} cancelada correctamente")
 
         except Exception as e:
-            logging.error(f"Error al cancelar reserva: {e}")
+            logging.error(f"Error al cancelar reserva {self.id_entidad}: {e}")
             raise ReservaError(
                 "Falló la cancelación de la reserva"
             ) from e
-
-        finally:
-            print("Proceso de cancelación finalizado")
 
     # PROCESAR RESERVA
     def procesar(self):
         """
         Procesa la reserva confirmada
         """
-        try:
-            if self.estado != Reserva.ESTADO_CONFIRMADA:
-                raise EstadoReservaError(
-                    "Solo reservas confirmadas pueden procesarse"
-                )
+        # Validar que solo se procesen reservas confirmadas
+        if self.estado != Reserva.ESTADO_CONFIRMADA:
+            raise EstadoReservaError(
+                "Solo reservas confirmadas pueden procesarse"
+            )
 
-            print("Procesando reserva...")
-            print("Servicio ejecutado correctamente")
-            self.estado = Reserva.ESTADO_PROCESADA
+        try:
+            # Aquí iría la lógica de procesamiento del servicio
+            # (simulado por ahora)
+            pass
 
         except Exception as e:
-            logging.error(f"Error al procesar reserva: {e}")
+            logging.error(
+                f"Error al procesar servicio de reserva {self.id_entidad}: {e}")
             raise ReservaError(
-                "Error durante el procesamiento"
+                "Error durante el procesamiento del servicio"
             ) from e
+
+        # Cambiar estado a procesada (solo si procesamiento fue exitoso)
+        self.estado = Reserva.ESTADO_PROCESADA
+        logging.info(f"Reserva {self.id_entidad} procesada correctamente")
 
     # MOSTRAR RESERVAS
 

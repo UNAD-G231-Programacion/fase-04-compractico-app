@@ -95,7 +95,7 @@ class CalculadoraCostos:
         if not (0 <= tasa_impuesto <= 1):
             raise ErrorCalculo(
                 "La tasa de impuesto debe estar entre 0 y 1.")
-        if not (0 < tasa_descuento <= 1):
+        if not (0 <= tasa_descuento <= 1):
             raise ErrorCalculo(
                 "La tasa de descuento debe estar entre 0 y 1 (excluyendo 0).")
 
