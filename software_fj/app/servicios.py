@@ -6,11 +6,10 @@ from .entidades_base import EntidadSistema
 from .calculos import CalculadoraCostos, ErrorCalculo
 import re
 
+
 # -----------------------------------------------------------------------
 # EXCEPCIONES MODULO SERVICIOS: Excepciones personalizadas para servicios.
 # -----------------------------------------------------------------------
-
-
 class ServicioError(Exception):
     """Error base del módulo de servicios."""
 
@@ -63,17 +62,20 @@ class AdminServicios:
             return False
 
         if nuevo_servicio.id_servicio in self._servicios:
+            # Si el servicio (id) ya esta registrado
             print("Ya existe un servicio con ese ID:")
             print(self._servicios[nuevo_servicio.id_servicio].mostrar_info())
             print("Use la función actualizar_servicio.")
             return False
 
+        # Si el servicio (id) NO esta registrado
         self._servicios[nuevo_servicio.id_servicio] = nuevo_servicio
         return True
 
     def actualizar_servicio(self, id_servicio: str, nuevo_servicio: "Servicio") -> bool:
         """Reemplaza un servicio existente. Retorna True si tuvo éxito."""
         if not isinstance(nuevo_servicio, Servicio) or id_servicio not in self._servicios:
+            # Si el servicio que se quiere actualizar no esta en la base de datos
             return False
 
         self._servicios[id_servicio] = nuevo_servicio
@@ -224,12 +226,14 @@ class Servicio(EntidadSistema, ABC):
 
     @property
     def costo_servicio(self) -> float:
+        # Obtiene el costo de servicio
         return self.__costo_servicio
 
     @costo_servicio.setter
     def costo_servicio(self, valor) -> None:
         numero = Entrada(str(valor)).a_numero()
         if numero is None or numero < 0:
+            # Si el numero es None o menor a cero (negativo)
             raise ServicioCostoInvalidoError(
                 "El costo debe ser un número mayor o igual a 0.", valor_recibido=valor)
         self.__costo_servicio = float(numero)
@@ -276,16 +280,19 @@ class Servicio(EntidadSistema, ABC):
         - iva_ok: si es True, se incluye el IVA.
         - disc_ok: si es True, se aplica el descuento.
 
-        Delega en CalculadoraCostos para mantener una única fuente de verdad.
+        Delega en CalculadoraCostos.
         """
         costo = self.costo_servicio
 
         try:
             if iva_ok and disc_ok:
+                # Implmenta iva y descuento en el calculo de costo
                 return CalculadoraCostos.costo_combinado(costo, self.valor_iva, self.valor_desc)
             if iva_ok:
+                # implementa solo iva en el calculo de costo
                 return CalculadoraCostos.costo_con_impuesto(costo, self.valor_iva)
             if disc_ok:
+                # implementa solo descuento en el calculo de costo
                 return CalculadoraCostos.costo_con_descuento(costo, self.valor_desc)
             return CalculadoraCostos.costo_base(costo)
         except ErrorCalculo as e:
@@ -299,7 +306,6 @@ class Servicio(EntidadSistema, ABC):
         """
         Retorna un string con la información del servicio.
         """
-        ...
 
     def __str__(self) -> str:
         # Permite usar print(servicio) directamente sin llamar mostrar_info() aparte

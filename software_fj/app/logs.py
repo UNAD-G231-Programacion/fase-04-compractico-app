@@ -36,6 +36,7 @@ os.makedirs(ruta_logs, exist_ok=True)
 
 archivo_log = os.path.join(ruta_logs, "sistema.log")
 
+# configura el archivo de logs
 logging.basicConfig(
     filename=archivo_log,
     level=logging.INFO,
@@ -48,22 +49,20 @@ logging.basicConfig(
 
 def registrar_error(mensaje, error):
     """Muestra el error en consola y lo guarda en el archivo de logs."""
-    print(mensaje, error)
     logging.error(f"{mensaje} {error}")
 
 
 def registrar_evento(mensaje):
     """Muestra un evento en consola y lo guarda en el archivo de logs."""
-    print(mensaje)
     logging.info(mensaje)
 
 
 # ── SIMULACIÓN INTEGRAL DEL SISTEMA ─────────────────────────────
 def simulacion_integral():
     """
-    Ejecuta la simulación integral del sistema con las clases oficiales.
-    Demuestra el registro de clientes, servicios y reservas válidas e inválidas,
-    garantizando la estabilidad del programa ante errores.
+    Ejecuta la simulación del sistema.Demuestra el registro de clientes, 
+    servicios y reservas válidas e inválidas,garantizando 
+    la estabilidad del programa ante errores.
     """
     print("\n" + "=" * 60)
     print("SIMULACIÓN INTEGRAL DEL SISTEMA")
